@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d0a08;
+  --foreground: #c4b59d;
+  --blood: #8b0000;
+  --blood-dark: #4a0000;
+  --rust: #8b4513;
+  --bone: #c4b59d;
+  --flesh: #d4a574;
+  --shadow: #1a1512;
+  --parchment: #d4c4a8;
+  --font-retro: "Press Start 2P", cursive;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-retro), monospace;
+}
+
+/* 다크 판타지 스타일 */
+.dark-box {
+  background: linear-gradient(180deg, #1a1512 0%, #0d0a08 100%);
+  border: 2px solid #3d2d1f;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.dark-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.blood-border {
+  border: 2px solid var(--blood);
+  box-shadow:
+    0 0 10px var(--blood-dark),
+    inset 0 0 10px rgba(139, 0, 0, 0.2);
+}
+
+.parchment-box {
+  background: linear-gradient(180deg, #d4c4a8 0%, #c4b498 100%);
+  border: 3px solid #8b7355;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.5);
+  color: #2d1f14;
+}
+
+.dark-btn {
+  font-family: var(--font-retro), monospace;
+  background: linear-gradient(180deg, #2d1f14 0%, #1a1512 100%);
+  border: 2px solid #5c4033;
+  color: var(--bone);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.dark-btn:hover {
+  background: linear-gradient(180deg, #3d2d1f 0%, #2d1f14 100%);
+  border-color: var(--blood);
+  color: var(--blood);
+  box-shadow: 0 0 15px var(--blood-dark);
+}
+
+.dark-btn:active {
+  transform: scale(0.98);
+}
+
+.blood-btn {
+  font-family: var(--font-retro), monospace;
+  background: linear-gradient(180deg, var(--blood) 0%, var(--blood-dark) 100%);
+  border: 2px solid #5c0000;
+  color: #ffd4d4;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.blood-btn:hover {
+  background: linear-gradient(180deg, #a00000 0%, var(--blood) 100%);
+  box-shadow: 0 0 20px var(--blood-dark);
+}
+
+/* 비네트 효과 */
+.vignette::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 노이즈/그레인 효과 */
+.grain::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 99;
+  opacity: 0.4;
+}
+
+/* 피 흘림 효과 */
+@keyframes drip {
+  0% { transform: translateY(-10px); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(100px); opacity: 0; }
+}
+
+.blood-drip {
+  animation: drip 3s infinite;
+}
+
+/* 깜빡임 효과 (촛불) */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+  75% { opacity: 0.9; }
+}
+
+.flicker {
+  animation: flicker 0.5s infinite;
+}
+
+/* 흔들림 효과 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.shake:hover {
+  animation: shake 0.1s infinite;
+}
+
+/* 스크롤바 커스텀 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d0a08;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3d2d1f;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blood-dark);
+}

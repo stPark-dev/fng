@@ -1,0 +1,224 @@
+{
+  "name": "Fear & Greed Index Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 9AM KST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "notes": "매일 오전 9시(KST) 실행. n8n 서버 timezone이 Asia/Seoul인지 확인 필요."
+    },
+    {
+      "parameters": {
+        "url": "https://api.alternative.me/fng/",
+        "options": {
+          "timeout": 10000
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "id": "http-request",
+      "name": "Fetch FNG API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "notes": "Alternative.me API 호출. limit=2로 오늘+어제 데이터 수신."
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Fear & Greed Index - Transform & Alert Logic\n */\n\nconst CONFIG = {\n  EXTREME_FEAR_THRESHOLD: 20,\n  EXTREME_GREED_THRESHOLD: 80,\n  SIGNIFICANT_CHANGE: 15,\n  EMOJI_MAP: {\n    'Extreme Fear': '😱',\n    'Fear': '😨',\n    'Neutral': '😐',\n    'Greed': '🤑',\n    'Extreme Greed': '🚀',\n  },\n};\n\nconst unixToISO = (ts) => new Date(parseInt(ts, 10) * 1000).toISOString();\nconst safeParseInt = (val) => parseInt(val, 10) || 0;\nconst getEmoji = (cls) => CONFIG.EMOJI_MAP[cls] || '📊';\nconst getChangeEmoji = (c) => c > 0 ? '📈' : c < 0 ? '📉' : '➡️';\n\ntry {\n  const apiResponse = $input.all()[0].json;\n  const fngData = apiResponse?.data;\n\n  if (!Array.isArray(fngData) || fngData.length < 2) {\n    throw new Error('Invalid API response');\n  }\n\n  const todayRaw = fngData[0];\n  const yesterdayRaw = fngData[1];\n\n  const todayVal = safeParseInt(todayRaw.value);\n  const yesterdayVal = safeParseInt(yesterdayRaw.value);\n  const todayClassification = todayRaw.value_classification || 'Unknown';\n\n  const change = todayVal - yesterdayVal;\n  const absChange = Math.abs(change);\n\n  const isExtremeFear = todayVal <= CONFIG.EXTREME_FEAR_THRESHOLD;\n  const isExtremeGreed = todayVal >= CONFIG.EXTREME_GREED_THRESHOLD;\n  const isSignificantChange = absChange >= CONFIG.SIGNIFICANT_CHANGE;\n\n  const shouldAlert = isExtremeFear || isExtremeGreed || isSignificantChange;\n\n  let alertMessage = '';\n  if (shouldAlert) {\n    const emoji = getEmoji(todayClassification);\n    const changeEmoji = getChangeEmoji(change);\n    const changeSign = change >= 0 ? '+' : '';\n\n    let alertType = '';\n    let actionMessage = '';\n\n    if (isExtremeFear) {\n      alertType = '🔥 *극단적 공포 = 매수 기회!*';\n      actionMessage = '\\n\\n💡 *\"공포에 사고, 환호에 팔아라\"*\\n⚔️ 전군 돌격 준비! 남들이 팔 때 사라!';\n    } else if (isExtremeGreed) {\n      alertType = '⚠️ *극단적 탐욕 = 차익실현 타이밍!*';\n      actionMessage = '\\n\\n💡 *\"환호할 때 팔아라\"*\\n🛡️ 수익 확보하고 현금 비중 늘려라!';\n    } else {\n      alertType = '⚡ *급격한 변동 감지*';\n      actionMessage = '\\n\\n💡 시장 변동성 주시 필요';\n    }\n\n    alertMessage = [\n      alertType,\n      '',\n      `${emoji} *Fear & Greed Index*`,\n      '━━━━━━━━━━━━━━━',\n      `📊 현재 지수: *${todayVal}* (${todayClassification})`,\n      `${changeEmoji} 전일 대비: *${changeSign}${change}*`,\n      `📅 어제 지수: ${yesterdayVal}`,\n    ].join('\\n') + actionMessage;\n  }\n\n  return [{\n    json: {\n      value: todayVal,\n      value_classification: todayClassification,\n      timestamp: unixToISO(todayRaw.timestamp),\n      should_alert: shouldAlert,\n      alert_message: alertMessage,\n      change: change,\n    }\n  }];\n\n} catch (error) {\n  return [{\n    json: {\n      _error: true,\n      _error_message: error.message,\n      should_alert: false,\n    }\n  }];\n}"
+      },
+      "id": "code-transform",
+      "name": "Transform & Check Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0],
+      "notes": "API 응답 파싱, 변동폭 계산, 알림 조건 판단"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "fng_logs",
+        "fieldsToSend": "defineBelow",
+        "fieldList": {
+          "fieldValues": [
+            {
+              "fieldName": "value",
+              "fieldValue": "={{ $json.value }}"
+            },
+            {
+              "fieldName": "value_classification",
+              "fieldValue": "={{ $json.value_classification }}"
+            },
+            {
+              "fieldName": "timestamp",
+              "fieldValue": "={{ $json.timestamp }}"
+            }
+          ]
+        },
+        "options": {
+          "onConflict": "ignore"
+        }
+      },
+      "id": "supabase-insert",
+      "name": "Save to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [660, 0],
+      "credentials": {
+        "supabaseApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "fng_logs 테이블에 INSERT. 중복 시 무시(idempotency)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.should_alert }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-should-alert",
+      "name": "Should Alert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [880, 0],
+      "notes": "알림 조건 충족 시에만 Telegram으로 분기"
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_CHAT_ID",
+        "text": "={{ $json.alert_message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "telegram-send",
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1100, -100],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      },
+      "notes": "Markdown 형식으로 알림 발송"
+    },
+    {
+      "parameters": {},
+      "id": "no-alert",
+      "name": "No Alert Needed",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1100, 100],
+      "notes": "알림 조건 미충족 시 종료"
+    }
+  ],
+  "connections": {
+    "Daily 9AM KST": {
+      "main": [
+        [
+          {
+            "node": "Fetch FNG API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch FNG API": {
+      "main": [
+        [
+          {
+            "node": "Transform & Check Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform & Check Alert": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Should Alert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Alert?": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Alert Needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Seoul"
+  },
+  "tags": [
+    {
+      "name": "crypto",
+      "id": "1"
+    },
+    {
+      "name": "etl",
+      "id": "2"
+    }
+  ]
+}
