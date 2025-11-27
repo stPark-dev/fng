@@ -81,7 +81,7 @@ export default function DashboardClient({
   return (
     <div className="min-h-screen bg-[#0d0a08] relative vignette grain">
       {/* 헤더 */}
-      <header className="border-b-2 border-[#3d2d1f] bg-gradient-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50">
+      <header className="border-b-2 border-[#3d2d1f] bg-gradient-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50 overflow-visible">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
@@ -92,6 +92,14 @@ export default function DashboardClient({
               </h1>
             </Link>
             <div className="flex items-center gap-4">
+              {/* 게시판 링크 */}
+              <Link href="/board">
+                <span
+                  className={`${fontClass} text-sm text-[#a08060] hover:text-[#c03030] transition-colors`}
+                >
+                  {locale === "ko" ? "게시판" : "Board"}
+                </span>
+              </Link>
               <button
                 onClick={toggleMute}
                 className="text-[#a08060] hover:text-[#e0d0b8] transition-colors p-2"
@@ -178,10 +186,9 @@ export default function DashboardClient({
       </main>
 
       {/* 푸터 */}
-      <footer className="border-t-2 border-[#4a3828] mt-12 bg-gradient-to-t from-[#1a1512] to-[#0d0a08]">
+      <footer className="border-t-2 border-[#4a3828] mt-12 bg-linear-to-t from-[#1a1512] to-[#0d0a08]">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex flex-col items-center gap-4">
-            <p className={`${fontClass} text-sm text-[#907050]`}>{t.footer.dataExtracted}</p>
             <a
               href="https://github.com/stPark-dev/"
               target="_blank"

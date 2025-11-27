@@ -58,9 +58,7 @@ export const translations = {
         "이것은 투자 조언이 아니다. 이 던전에서, 당신의 선택의 무게는 오직 당신만이 짊어진다.",
     },
     // Footer
-    footer: {
-      dataExtracted: "심연에서 추출된 데이터 | NEXT.JS로 단조됨",
-    },
+    footer: {},
     // Investment quotes (from famous investors)
     quotes: [
       { quote: "공포에 사고, 환호에 팔아라", author: "워렌 버핏" },
@@ -154,9 +152,7 @@ export const translations = {
         "This is not financial advice. In this dungeon, you alone bear the weight of your choices.",
     },
     // Footer
-    footer: {
-      dataExtracted: "DATA EXTRACTED FROM THE VOID | FORGED WITH NEXT.JS",
-    },
+    footer: {},
     // Investment quotes (from famous investors)
     quotes: [
       {
