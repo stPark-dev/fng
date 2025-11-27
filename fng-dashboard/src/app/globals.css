@@ -11,6 +11,7 @@
   --shadow: #1a1512;
   --parchment: #d4c4a8;
   --font-retro: "Press Start 2P", cursive;
+  --font-korean: var(--font-korean), "Noto Sans KR", sans-serif;
 }
 
 @theme inline {
@@ -24,14 +25,67 @@ body {
   font-family: var(--font-retro), monospace;
 }
 
+/* 한글 폰트 스타일 - 크게, 굵게 */
+:lang(ko),
+[lang="ko"],
+.korean-text {
+  font-family: var(--font-korean), "Noto Sans KR", sans-serif;
+  font-weight: 700;
+}
+
+/* 한글이 포함된 요소들 스타일 강화 */
+html[lang="ko"] h1,
+html[lang="ko"] h2,
+html[lang="ko"] h3,
+html[lang="ko"] h4,
+html[lang="ko"] h5,
+html[lang="ko"] h6 {
+  font-weight: 900;
+}
+
+/* 한글 텍스트 크기 보정 (기본 크기를 더 크게) */
+html[lang="ko"] .text-xs {
+  font-size: 0.875rem !important; /* 12px -> 14px */
+  line-height: 1.4;
+}
+
+html[lang="ko"] .text-sm {
+  font-size: 1rem !important; /* 14px -> 16px */
+  line-height: 1.5;
+}
+
+html[lang="ko"] .text-base {
+  font-size: 1.125rem !important; /* 16px -> 18px */
+  line-height: 1.6;
+}
+
+html[lang="ko"] .text-lg {
+  font-size: 1.375rem !important; /* 18px -> 22px */
+  line-height: 1.6;
+}
+
+html[lang="ko"] .text-xl {
+  font-size: 1.5rem !important; /* 20px -> 24px */
+  line-height: 1.5;
+}
+
+html[lang="ko"] .text-\[10px\] {
+  font-size: 0.75rem !important; /* 10px -> 12px */
+  line-height: 1.4;
+}
+
+html[lang="ko"] .text-\[9px\] {
+  font-size: 0.6875rem !important; /* 9px -> 11px */
+  line-height: 1.4;
+}
+
 /* 다크 판타지 스타일 */
 .dark-box {
-  background: linear-gradient(180deg, #1a1512 0%, #0d0a08 100%);
+  background: linear-gradient(180deg, rgba(26, 21, 18, 0.85) 0%, rgba(13, 10, 8, 0.8) 100%);
   border: 2px solid #3d2d1f;
-  box-shadow:
-    inset 0 0 20px rgba(0, 0, 0, 0.8),
-    0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
   position: relative;
+  backdrop-filter: blur(8px);
 }
 
 .dark-box::before {
@@ -47,17 +101,13 @@ body {
 
 .blood-border {
   border: 2px solid var(--blood);
-  box-shadow:
-    0 0 10px var(--blood-dark),
-    inset 0 0 10px rgba(139, 0, 0, 0.2);
+  box-shadow: 0 0 10px var(--blood-dark), inset 0 0 10px rgba(139, 0, 0, 0.2);
 }
 
 .parchment-box {
   background: linear-gradient(180deg, #d4c4a8 0%, #c4b498 100%);
   border: 3px solid #8b7355;
-  box-shadow:
-    inset 0 0 30px rgba(0, 0, 0, 0.3),
-    0 4px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.5);
   color: #2d1f14;
 }
 
@@ -134,9 +184,17 @@ body {
 
 /* 피 흘림 효과 */
 @keyframes drip {
-  0% { transform: translateY(-10px); opacity: 0; }
-  10% { opacity: 1; }
-  100% { transform: translateY(100px); opacity: 0; }
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
 }
 
 .blood-drip {
@@ -145,9 +203,16 @@ body {
 
 /* 깜빡임 효과 (촛불) */
 @keyframes flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-  75% { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.9;
+  }
 }
 
 .flicker {
@@ -156,9 +221,16 @@ body {
 
 /* 흔들림 효과 */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-1px); }
-  75% { transform: translateX(1px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-1px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
 }
 
 .shake:hover {

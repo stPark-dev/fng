@@ -103,18 +103,18 @@ export default function DarkStats({ yearHigh, yearLow }: DarkStatsProps) {
         </div>
       </div>
 
-      {/* 어둠의 명언 */}
-      <div className="dark-box p-6 border-[#4a0080] shadow-[0_0_15px_#4a008040,inset_0_0_15px_rgba(74,0,128,0.1)]">
+      {/* 투자 명언 */}
+      <div className="dark-box p-6 border-[#d4a574] shadow-[0_0_15px_#d4a57440,inset_0_0_15px_rgba(212,165,116,0.1)]">
         <div className="flex items-start gap-4">
-          <div className="text-2xl flicker">🕯️</div>
+          <div className="text-2xl">💡</div>
           <div>
-            <h3 className={`${fontClass} text-sm text-[#4a0080] mb-3`}>
+            <h3 className={`${fontClass} text-sm text-[#d4a574] mb-3`}>
               {t.stats.whispersFromVoid}
             </h3>
-            <p className={`${fontClass} text-xs text-[#c4b59d] leading-relaxed`}>
+            <p className={`${fontClass} text-sm text-[#c4b59d] leading-relaxed`}>
               &quot;{quote.quote}&quot;
             </p>
-            <p className={`${fontClass} text-[10px] text-[#5c4033] mt-3`}>
+            <p className={`${fontClass} text-xs text-[#8b7355] mt-3`}>
               — {quote.author}
             </p>
           </div>

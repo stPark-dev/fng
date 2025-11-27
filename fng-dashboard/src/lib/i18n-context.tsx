@@ -29,7 +29,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const t = translations[locale];
   const fontClass = locale === "ko"
-    ? "font-[family-name:var(--font-korean)]"
+    ? "font-[family-name:var(--font-korean)] font-bold text-[1.2em]"
     : "font-[family-name:var(--font-retro)]";
 
   return (

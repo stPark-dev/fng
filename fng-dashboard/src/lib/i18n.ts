@@ -5,16 +5,12 @@ export const translations = {
     // Landing Page
     landing: {
       title: "공포 & 탐욕",
-      subtitle: "시장은 자비를 모른다",
-      enterDungeon: "⛧ 던전에 입장하라 ⛧",
       descend: "입장하기",
       signIn: "로그인",
       join: "가입하기",
       inTheDepths: "시장의 깊은 곳에서...",
       whereHopeDies: "희망이 죽어가는 곳에서...",
       willYouSurvive: "살아남을 수 있겠는가?",
-      warning: "경고: 시장은 잔인한 여인이다.",
-      manyEntered: "많은 이들이 들어갔다. 돌아온 자는 적다.",
     },
     // Header
     header: {
@@ -23,22 +19,22 @@ export const translations = {
     },
     // Gauge
     gauge: {
-      soulStatus: "⛧ 영혼 상태 ⛧",
+      soulStatus: "공포 & 탐욕 지수",
       sinceYesterday: "전일 대비:",
       fear: "공포",
       greed: "탐욕",
-      terror: "공포",
-      dread: "두려움",
-      unease: "불안",
-      desire: "욕망",
-      madness: "광기",
+      terror: "극단적 공포",
+      dread: "공포",
+      unease: "중립",
+      desire: "탐욕",
+      madness: "극단적 탐욕",
     },
     // Stats
     stats: {
       chroniclesOfYear: "⛧ 연간 기록 ⛧",
       peakMadness: "최고의 광기",
       deepestTerror: "최심의 공포",
-      whispersFromVoid: "심연의 속삭임",
+      whispersFromVoid: "💡 투자 명언",
     },
     // Chart
     chart: {
@@ -53,49 +49,64 @@ export const translations = {
     // Info boxes
     info: {
       whatIsThisCurse: "이 저주란 무엇인가?",
-      whatIsThisCurseText: "공포 & 탐욕 지수는 트레이더들의 영혼을 측정한다. 0(순수한 공포)부터 100(맹목적 탐욕)까지.",
+      whatIsThisCurseText:
+        "공포 & 탐욕 지수는 트레이더들의 영혼을 측정한다. 0(순수한 공포)부터 100(맹목적 탐욕)까지.",
       theOracle: "신탁",
       theOracleText: "데이터는 Alternative.me에서 흘러나와, 심연을 통해 속삭여진다.",
       aWarning: "경고",
-      aWarningText: "이것은 투자 조언이 아니다. 이 던전에서, 당신의 선택의 무게는 오직 당신만이 짊어진다.",
+      aWarningText:
+        "이것은 투자 조언이 아니다. 이 던전에서, 당신의 선택의 무게는 오직 당신만이 짊어진다.",
     },
     // Footer
     footer: {
       dataExtracted: "심연에서 추출된 데이터 | NEXT.JS로 단조됨",
     },
-    // Dark quotes
+    // Investment quotes (from famous investors)
     quotes: [
-      { quote: "시장은 약자를 자비 없이 집어삼킨다", author: "고대의 트레이더" },
-      { quote: "피로 사고, 눈물로 판다", author: "상인" },
-      { quote: "공포는 수익의 정신을 죽이는 것", author: "던전 신탁" },
-      { quote: "탐욕은 부를 찾는 자의 눈을 멀게 한다", author: "타락한 자" },
-      { quote: "인내하라... 시장은 기다리는 자에게 보상한다", author: "해골 왕" },
-      { quote: "당신의 포트폴리오는 당신의 영혼을 반영한다", author: "어둠의 사제" },
-      { quote: "희망은 곰의 첫 번째 희생자다", author: "감시자" },
-      { quote: "다이아몬드는 절망 속에서 단조된다", author: "동굴 거주자" },
-      { quote: "차트는 귀 기울이는 자에게 속삭인다", author: "맹인 예언자" },
-      { quote: "서둘러 팔지 마라, 공허해질지니", author: "언데드 남작" },
-      { quote: "FOMO는 심연으로 가는 길이다", author: "잃어버린 영혼" },
-      { quote: "시장의 던전에서, 인내하는 자만이 살아남는다", author: "수호자" },
-      { quote: "레버리지는 양날의 저주다", author: "빚의 망령" },
-      { quote: "딥은 용감한 자와 어리석은 자 모두를 부른다", author: "구덩이 거주자" },
-      { quote: "어둠을 뚫고 홀드하라, 새벽이 올 것이다", author: "예언자" },
+      { quote: "공포에 사고, 환호에 팔아라", author: "워렌 버핏" },
+      {
+        quote: "다른 사람들이 탐욕스러울 때 두려워하고, 다른 사람들이 두려워할 때 탐욕스러워라",
+        author: "워렌 버핏",
+      },
+      {
+        quote: "시장은 단기적으로 투표 기계지만, 장기적으로는 저울이다",
+        author: "벤저민 그레이엄",
+      },
+      { quote: "최고의 투자 시간은 피가 거리에 흥건할 때다", author: "로스차일드" },
+      { quote: "복리는 세계 8번째 불가사의다", author: "알버트 아인슈타인" },
+      { quote: "투자에서 가장 위험한 말은 '이번엔 다르다'이다", author: "존 템플턴" },
+      {
+        quote: "주식시장은 인내심 없는 사람의 돈을 인내심 있는 사람에게 옮기는 도구다",
+        author: "워렌 버핏",
+      },
+      { quote: "10년 동안 보유할 주식이 아니라면 10분도 보유하지 마라", author: "워렌 버핏" },
+      { quote: "분산투자는 무지에 대한 방어책이다", author: "워렌 버핏" },
+      { quote: "시장을 이기려 하지 말고, 시장과 함께 가라", author: "존 보글" },
+      { quote: "가격은 당신이 지불하는 것이고, 가치는 당신이 얻는 것이다", author: "워렌 버핏" },
+      {
+        quote: "투자의 첫 번째 규칙: 절대 돈을 잃지 마라. 두 번째 규칙: 첫 번째 규칙을 잊지 마라",
+        author: "워렌 버핏",
+      },
+      { quote: "군중을 따르면 군중 이상이 될 수 없다", author: "앙드레 코스톨라니" },
+      { quote: "주식을 사는 것은 사업의 일부를 사는 것이다", author: "벤저민 그레이엄" },
+      { quote: "하락장은 기회다. 공포가 극대화될 때 최고의 매수 기회가 온다", author: "피터 린치" },
+      { quote: "시장 타이밍을 맞추려 하지 말고, 시장에 머무는 시간을 늘려라", author: "켄 피셔" },
+      { quote: "단기 변동에 흔들리지 마라. 장기적 관점을 유지하라", author: "존 보글" },
+      { quote: "투자는 마라톤이지, 단거리 경주가 아니다", author: "피터 린치" },
+      { quote: "최악의 시기에 팔고, 최고의 시기에 사지 마라", author: "하워드 막스" },
+      { quote: "감정은 투자의 적이다. 냉철함을 유지하라", author: "벤저민 그레이엄" },
     ],
   },
   en: {
     // Landing Page
     landing: {
       title: "FEAR & GREED",
-      subtitle: "THE MARKET KNOWS NO MERCY",
-      enterDungeon: "⛧ ENTER THE DUNGEON ⛧",
       descend: "DESCEND",
       signIn: "SIGN IN",
       join: "JOIN",
       inTheDepths: "IN THE DEPTHS OF THE MARKET...",
       whereHopeDies: "WHERE HOPE GOES TO DIE...",
       willYouSurvive: "WILL YOU SURVIVE?",
-      warning: "WARNING: THE MARKET IS A CRUEL MISTRESS.",
-      manyEntered: "MANY HAVE ENTERED. FEW HAVE RETURNED.",
     },
     // Header
     header: {
@@ -104,22 +115,22 @@ export const translations = {
     },
     // Gauge
     gauge: {
-      soulStatus: "⛧ SOUL STATUS ⛧",
+      soulStatus: "FEAR & GREED INDEX",
       sinceYesterday: "SINCE YESTERDAY:",
       fear: "FEAR",
       greed: "GREED",
-      terror: "TERROR",
-      dread: "DREAD",
-      unease: "UNEASE",
-      desire: "DESIRE",
-      madness: "MADNESS",
+      terror: "EXTREME FEAR",
+      dread: "FEAR",
+      unease: "NEUTRAL",
+      desire: "GREED",
+      madness: "EXTREME GREED",
     },
     // Stats
     stats: {
       chroniclesOfYear: "⛧ CHRONICLES OF THE YEAR ⛧",
       peakMadness: "PEAK MADNESS",
       deepestTerror: "DEEPEST TERROR",
-      whispersFromVoid: "WHISPERS FROM THE VOID",
+      whispersFromVoid: "💡 INVESTMENT WISDOM",
     },
     // Chart
     chart: {
@@ -134,33 +145,67 @@ export const translations = {
     // Info boxes
     info: {
       whatIsThisCurse: "WHAT IS THIS CURSE?",
-      whatIsThisCurseText: "The Fear & Greed Index measures the souls of traders, from 0 (pure terror) to 100 (blind greed).",
+      whatIsThisCurseText:
+        "The Fear & Greed Index measures the souls of traders, from 0 (pure terror) to 100 (blind greed).",
       theOracle: "THE ORACLE",
       theOracleText: "Data flows from the Alternative.me, whispered through the void.",
       aWarning: "A WARNING",
-      aWarningText: "This is not financial advice. In this dungeon, you alone bear the weight of your choices.",
+      aWarningText:
+        "This is not financial advice. In this dungeon, you alone bear the weight of your choices.",
     },
     // Footer
     footer: {
       dataExtracted: "DATA EXTRACTED FROM THE VOID | FORGED WITH NEXT.JS",
     },
-    // Dark quotes
+    // Investment quotes (from famous investors)
     quotes: [
-      { quote: "THE MARKET DEVOURS THE WEAK WITHOUT MERCY", author: "ANCIENT TRADER" },
-      { quote: "IN BLOOD WE BUY, IN TEARS WE SELL", author: "THE MERCHANT" },
-      { quote: "FEAR IS THE MIND-KILLER OF PROFITS", author: "DUNGEON ORACLE" },
-      { quote: "GREED BLINDS THOSE WHO SEEK FORTUNE", author: "THE FALLEN" },
-      { quote: "PATIENCE... THE MARKET REWARDS THOSE WHO WAIT", author: "SKELETON KING" },
-      { quote: "YOUR PORTFOLIO REFLECTS YOUR SOUL", author: "DARK PRIEST" },
-      { quote: "HOPE IS THE FIRST CASUALTY OF THE BEAR", author: "THE WATCHER" },
-      { quote: "DIAMONDS ARE FORGED IN DESPAIR", author: "CAVE DWELLER" },
-      { quote: "THE CHARTS WHISPER TO THOSE WHO LISTEN", author: "BLIND SEER" },
-      { quote: "SELL NOT IN HASTE, LEST YOU BECOME HOLLOW", author: "UNDEAD BARON" },
-      { quote: "FOMO IS THE PATH TO THE ABYSS", author: "LOST SOUL" },
-      { quote: "IN THE DUNGEON OF MARKETS, ONLY THE PATIENT SURVIVE", author: "GUARDIAN" },
-      { quote: "LEVERAGE IS A DOUBLE-EDGED CURSE", author: "DEBT WRAITH" },
-      { quote: "THE DIP CALLS TO THE BRAVE AND FOOLISH ALIKE", author: "PIT DWELLER" },
-      { quote: "HODL THROUGH THE DARKNESS, DAWN WILL COME", author: "PROPHET" },
+      {
+        quote: "Be fearful when others are greedy and greedy when others are fearful",
+        author: "Warren Buffett",
+      },
+      {
+        quote:
+          "The stock market is a device for transferring money from the impatient to the patient",
+        author: "Warren Buffett",
+      },
+      {
+        quote:
+          "In the short run, the market is a voting machine but in the long run, it is a weighing machine",
+        author: "Benjamin Graham",
+      },
+      { quote: "The time to buy is when there's blood in the streets", author: "Baron Rothschild" },
+      { quote: "Compound interest is the eighth wonder of the world", author: "Albert Einstein" },
+      {
+        quote: "The four most dangerous words in investing are: 'This time it's different'",
+        author: "John Templeton",
+      },
+      {
+        quote:
+          "If you aren't willing to own a stock for 10 years, don't even think about owning it for 10 minutes",
+        author: "Warren Buffett",
+      },
+      { quote: "Diversification is protection against ignorance", author: "Warren Buffett" },
+      { quote: "Don't try to beat the market, join it", author: "John Bogle" },
+      { quote: "Price is what you pay. Value is what you get", author: "Warren Buffett" },
+      {
+        quote: "Rule No. 1: Never lose money. Rule No. 2: Never forget Rule No. 1",
+        author: "Warren Buffett",
+      },
+      {
+        quote: "If you follow the crowd, you'll never be more than the crowd",
+        author: "André Kostolany",
+      },
+      { quote: "Buying a stock is buying a piece of a business", author: "Benjamin Graham" },
+      { quote: "The best time to invest is when fear is at its maximum", author: "Peter Lynch" },
+      { quote: "Time in the market beats timing the market", author: "Ken Fisher" },
+      { quote: "Stay the course. Don't let short-term volatility shake you", author: "John Bogle" },
+      { quote: "Investing is a marathon, not a sprint", author: "Peter Lynch" },
+      { quote: "Don't sell at the worst time and buy at the best time", author: "Howard Marks" },
+      { quote: "Emotions are the enemy of investing. Stay rational", author: "Benjamin Graham" },
+      {
+        quote: "The market can stay irrational longer than you can stay solvent",
+        author: "John Maynard Keynes",
+      },
     ],
   },
 } as const;

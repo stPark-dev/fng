@@ -2,6 +2,7 @@
 
 import { useI18n } from "@/lib/i18n-context";
 import LanguageSwitch from "@/components/LanguageSwitch";
+import AuthButton from "@/components/AuthButton";
 import DarkGauge from "@/components/DarkGauge";
 import DarkChart from "@/components/DarkChart";
 import DarkStats from "@/components/DarkStats";
@@ -63,7 +64,7 @@ export default function DashboardClient({
             </Link>
             <div className="flex items-center gap-4">
               <LanguageSwitch />
-              <div className="text-right">
+              <div className="text-right hidden sm:block">
                 <p className={`${fontClass} text-xs text-[#5c4033]`}>
                   {t.header.lastOffering}
                 </p>
@@ -71,6 +72,7 @@ export default function DashboardClient({
                   {formatDate(current.date)}
                 </p>
               </div>
+              <AuthButton />
             </div>
           </div>
         </div>
