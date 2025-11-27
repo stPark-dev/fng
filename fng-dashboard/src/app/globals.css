@@ -118,7 +118,6 @@ html {
 }
 
 .dark-btn {
-  font-family: var(--font-retro), monospace;
   background: linear-gradient(180deg, #3a2a1a 0%, #251a10 100%);
   border: 2px solid #6a5040;
   color: var(--bone);
@@ -143,7 +142,6 @@ html {
 }
 
 .blood-btn {
-  font-family: var(--font-retro), monospace;
   background: linear-gradient(180deg, var(--blood) 0%, var(--blood-dark) 100%);
   border: 2px solid #700000;
   color: #ffe0e0;

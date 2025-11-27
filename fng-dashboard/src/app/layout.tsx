@@ -3,6 +3,8 @@ import { Press_Start_2P, Black_And_White_Picture } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n-context";
 import { AuthProvider } from "@/lib/auth-context";
+import { MusicProvider } from "@/lib/music-context";
+import FloatingMusicPlayer from "@/components/FloatingMusicPlayer";
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
@@ -31,7 +33,12 @@ export default function RootLayout({
     <html lang="ko" className="dark">
       <body className={`${pressStart2P.variable} ${blackAndWhitePicture.variable} antialiased`}>
         <AuthProvider>
-          <I18nProvider>{children}</I18nProvider>
+          <I18nProvider>
+            <MusicProvider>
+              {children}
+              <FloatingMusicPlayer />
+            </MusicProvider>
+          </I18nProvider>
         </AuthProvider>
       </body>
     </html>

@@ -51,15 +51,11 @@ export default function LandingPage() {
 
           <div className="space-y-4">
             <Link href="/login" className="block">
-              <button className="blood-btn w-full text-sm md:text-base">
-                {t.landing.signIn}
-              </button>
+              <button className="blood-btn w-full text-sm md:text-base">{t.landing.signIn}</button>
             </Link>
 
             <Link href="/signup" className="block">
-              <button className="dark-btn w-full text-sm">
-                {t.landing.join}
-              </button>
+              <button className="dark-btn w-full text-sm">{t.landing.join}</button>
             </Link>
           </div>
 

@@ -16,7 +16,6 @@ import {
   Post,
   Comment,
 } from "@/lib/board-api";
-import { createSupabaseBrowserClient } from "@/lib/supabase";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import AuthButton from "@/components/AuthButton";
 
@@ -28,9 +27,7 @@ export default function PostDetailPage() {
   const postId = params.id as string;
 
   const [post, setPost] = useState<Post | null>(null);
-  const [author, setAuthor] = useState<{ name: string; avatar_url: string | null } | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [commentAuthors, setCommentAuthors] = useState<Record<string, { name: string; avatar_url: string | null }>>({});
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -56,18 +53,6 @@ export default function PostDetailPage() {
         return;
       }
       setPost(postData);
-
-      // 작성자 정보 가져오기
-      const supabase = createSupabaseBrowserClient();
-      const { data: userData } = await supabase.auth.admin.getUserById(postData.user_id).catch(() => ({ data: null }));
-
-      // admin API가 안되면 posts 테이블에서 가져온 user_id로 표시
-      if (userData?.user) {
-        setAuthor({
-          name: userData.user.user_metadata?.name || userData.user.email?.split("@")[0] || "Unknown",
-          avatar_url: userData.user.user_metadata?.avatar_url || userData.user.user_metadata?.picture || null,
-        });
-      }
 
       // 댓글 로드
       const commentsData = await getComments(postId);
@@ -204,14 +189,14 @@ export default function PostDetailPage() {
             {isAuthor && (
               <div className="flex gap-2">
                 <Link href={`/board/${postId}/edit`}>
-                  <button className="dark-btn text-xs px-3 py-1">
+                  <button className={`${fontClass} text-sm px-4 py-2 border-2 border-[#4a3828] text-[#a08060] hover:border-[#c03030] hover:text-[#c03030] transition-colors`}>
                     {locale === "ko" ? "수정" : "Edit"}
                   </button>
                 </Link>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="text-xs px-3 py-1 border-2 border-[#ff4444] text-[#ff4444] hover:bg-[#ff4444] hover:text-white transition-colors disabled:opacity-50"
+                  className={`${fontClass} text-sm px-4 py-2 border-2 border-[#ff4444] text-[#ff4444] hover:bg-[#ff4444] hover:text-white transition-colors disabled:opacity-50`}
                 >
                   {deleting ? "..." : locale === "ko" ? "삭제" : "Delete"}
                 </button>
@@ -222,21 +207,21 @@ export default function PostDetailPage() {
           {/* 메타 정보 */}
           <div className="flex items-center gap-4 mb-6 pb-4 border-b border-[#3d2d1f]">
             <div className="flex items-center gap-2">
-              {author?.avatar_url ? (
+              {post.author_avatar_url ? (
                 <Image
-                  src={author.avatar_url}
-                  alt={author.name}
+                  src={post.author_avatar_url}
+                  alt={post.author_name}
                   width={24}
                   height={24}
                   className="rounded-full"
                 />
               ) : (
                 <div className="w-6 h-6 rounded-full bg-[#8b0000] flex items-center justify-center text-white text-xs">
-                  ?
+                  {post.author_name.charAt(0).toUpperCase()}
                 </div>
               )}
               <span className={`${fontClass} text-sm text-[#a08060]`}>
-                {author?.name || "Unknown"}
+                {post.author_name}
               </span>
             </div>
             <span className={`${fontClass} text-xs text-[#5a4a3a]`}>
@@ -249,14 +234,16 @@ export default function PostDetailPage() {
 
           {/* 이미지 */}
           {post.image_url && (
-            <div className="mb-6 relative w-full max-h-[500px] overflow-hidden rounded border border-[#3d2d1f]">
-              <Image
-                src={post.image_url}
-                alt={post.title}
-                width={800}
-                height={500}
-                className="w-full h-auto object-contain"
-              />
+            <div className="mb-6 flex justify-center">
+              <div className="relative max-w-md rounded border border-[#3d2d1f]">
+                <Image
+                  src={post.image_url}
+                  alt={post.title}
+                  width={400}
+                  height={600}
+                  className="w-full h-auto"
+                />
+              </div>
             </div>
           )}
 
@@ -285,7 +272,7 @@ export default function PostDetailPage() {
                 <button
                   type="submit"
                   disabled={submitting || !newComment.trim()}
-                  className="blood-btn text-sm px-4 py-2 disabled:opacity-50"
+                  className={`${fontClass} blood-btn text-sm px-4 py-2 disabled:opacity-50`}
                 >
                   {submitting
                     ? "..."
@@ -310,11 +297,21 @@ export default function PostDetailPage() {
                 <div key={comment.id} className="border-b border-[#3d2d1f] pb-4 last:border-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#8b0000] flex items-center justify-center text-white text-xs">
-                        ?
-                      </div>
+                      {comment.author_avatar_url ? (
+                        <Image
+                          src={comment.author_avatar_url}
+                          alt={comment.author_name}
+                          width={24}
+                          height={24}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-[#8b0000] flex items-center justify-center text-white text-xs">
+                          {comment.author_name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                       <span className={`${fontClass} text-sm text-[#a08060]`}>
-                        {locale === "ko" ? "익명" : "Anonymous"}
+                        {comment.author_name}
                       </span>
                       <span className={`${fontClass} text-xs text-[#5a4a3a]`}>
                         {formatDate(comment.created_at)}

@@ -122,8 +122,8 @@ export default function BoardPage() {
           {/* 글쓰기 버튼 */}
           {user && (
             <Link href="/board/new">
-              <button className="blood-btn text-sm px-4 py-2">
-                {locale === "ko" ? "✍ 글쓰기" : "✍ Write"}
+              <button className={`${fontClass} blood-btn text-sm px-4 py-2`}>
+                {locale === "ko" ? "글쓰기" : "Write"}
               </button>
             </Link>
           )}
@@ -173,6 +173,24 @@ export default function BoardPage() {
                           {post.content}
                         </p>
                         <div className="flex items-center gap-4 mt-2">
+                          <div className="flex items-center gap-1">
+                            {post.author_avatar_url ? (
+                              <Image
+                                src={post.author_avatar_url}
+                                alt={post.author_name}
+                                width={16}
+                                height={16}
+                                className="rounded-full"
+                              />
+                            ) : (
+                              <div className="w-4 h-4 rounded-full bg-[#8b0000] flex items-center justify-center text-white text-[8px]">
+                                {post.author_name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <span className={`${fontClass} text-xs text-[#a08060]`}>
+                              {post.author_name}
+                            </span>
+                          </div>
                           <span className={`${fontClass} text-xs text-[#5a4a3a]`}>
                             {formatDate(post.created_at)}
                           </span>
@@ -195,7 +213,7 @@ export default function BoardPage() {
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="dark-btn text-sm px-3 py-1 disabled:opacity-50"
+              className={`${fontClass} dark-btn text-sm px-3 py-1 disabled:opacity-50`}
             >
               ←
             </button>
@@ -217,7 +235,7 @@ export default function BoardPage() {
             <button
               onClick={() => setPage(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}
-              className="dark-btn text-sm px-3 py-1 disabled:opacity-50"
+              className={`${fontClass} dark-btn text-sm px-3 py-1 disabled:opacity-50`}
             >
               →
             </button>

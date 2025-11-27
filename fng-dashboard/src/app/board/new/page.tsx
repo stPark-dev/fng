@@ -203,23 +203,25 @@ export default function NewPostPage() {
               </label>
 
               {previewUrl ? (
-                <div className="relative">
-                  <div className="relative w-full max-h-[300px] overflow-hidden rounded border border-[#3d2d1f]">
-                    <Image
-                      src={previewUrl}
-                      alt="Preview"
-                      width={600}
-                      height={300}
-                      className="w-full h-auto object-contain"
-                    />
+                <div className="flex justify-center">
+                  <div className="relative max-w-md">
+                    <div className="rounded border border-[#3d2d1f]">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview"
+                        width={400}
+                        height={600}
+                        className="w-full h-auto"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 w-8 h-8 bg-[#ff4444] text-white rounded-full flex items-center justify-center hover:bg-[#cc3333] transition-colors"
+                    >
+                      ×
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="absolute top-2 right-2 w-8 h-8 bg-[#ff4444] text-white rounded-full flex items-center justify-center hover:bg-[#cc3333] transition-colors"
-                  >
-                    ×
-                  </button>
                 </div>
               ) : (
                 <div
@@ -270,7 +272,7 @@ export default function NewPostPage() {
               <Link href="/board" className="flex-1">
                 <button
                   type="button"
-                  className="dark-btn w-full text-sm py-3"
+                  className={`${fontClass} dark-btn w-full text-sm px-4 py-2`}
                 >
                   {locale === "ko" ? "취소" : "Cancel"}
                 </button>
@@ -278,7 +280,7 @@ export default function NewPostPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="blood-btn flex-1 text-sm py-3 disabled:opacity-50"
+                className={`${fontClass} blood-btn flex-1 text-sm px-4 py-2 disabled:opacity-50`}
               >
                 {submitting
                   ? locale === "ko" ? "저장 중..." : "Saving..."

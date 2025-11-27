@@ -5,6 +5,8 @@
 CREATE TABLE posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  author_name VARCHAR(100) NOT NULL,
+  author_avatar_url TEXT,
   title VARCHAR(200) NOT NULL,
   content TEXT NOT NULL,
   image_url TEXT,
@@ -19,10 +21,18 @@ CREATE TABLE comments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  author_name VARCHAR(100) NOT NULL,
+  author_avatar_url TEXT,
   content TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- 기존 테이블에 컬럼 추가 (이미 테이블이 있는 경우)
+-- ALTER TABLE posts ADD COLUMN author_name VARCHAR(100);
+-- ALTER TABLE posts ADD COLUMN author_avatar_url TEXT;
+-- ALTER TABLE comments ADD COLUMN author_name VARCHAR(100);
+-- ALTER TABLE comments ADD COLUMN author_avatar_url TEXT;
 
 -- 인덱스 생성
 CREATE INDEX idx_posts_user_id ON posts(user_id);

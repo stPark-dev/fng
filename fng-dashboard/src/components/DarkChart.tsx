@@ -88,7 +88,8 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
     return { year: "2-digit" as const, month: "short" as const };
   };
 
-  const chartData = [...data].reverse().map((item) => ({
+  const chartData = [...data].reverse().map((item, index) => ({
+    index, // 고유 인덱스 추가
     date: item.date.toLocaleDateString(
       locale === "ko" ? "ko-KR" : "en-US",
       getDateFormat(period)
@@ -203,11 +204,12 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="#3a2a1a" />
 
             <XAxis
-              dataKey="date"
+              dataKey="index"
               stroke="#4a3828"
               tick={{ fill: "#a08060", fontSize: 12, fontFamily: "monospace" }}
               tickLine={{ stroke: "#4a3828" }}
               interval={getXAxisInterval(period)}
+              tickFormatter={(index) => chartData[index]?.date || ""}
             />
 
             <YAxis
@@ -218,7 +220,10 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
               ticks={[0, 20, 40, 60, 80, 100]}
             />
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ stroke: "#c03030", strokeWidth: 1, strokeDasharray: "5 5" }}
+            />
 
             {/* 구간 참조선 */}
             <ReferenceLine y={20} stroke="#ff4444" strokeDasharray="5 5" strokeOpacity={0.5} />
@@ -230,14 +235,16 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
               type="monotone"
               dataKey="value"
               stroke="#c03030"
-              strokeWidth={3}
+              strokeWidth={period === "1y" || period === "2y" ? 1.5 : 3}
               fill="url(#colorValue)"
+              dot={false}
               activeDot={{
-                r: 8,
+                r: 6,
                 fill: "#c03030",
                 stroke: "#fff0f0",
-                strokeWidth: 3,
+                strokeWidth: 2,
               }}
+              isAnimationActive={false}
               style={{
                 filter: "drop-shadow(0 0 8px #c03030)",
               }}

@@ -3,6 +3,8 @@ import { createSupabaseBrowserClient } from "./supabase";
 export interface Post {
   id: string;
   user_id: string;
+  author_name: string;
+  author_avatar_url: string | null;
   title: string;
   content: string;
   image_url: string | null;
@@ -10,33 +12,17 @@ export interface Post {
   view_count: number;
   created_at: string;
   updated_at: string;
-  // Join된 사용자 정보
-  user?: {
-    email: string;
-    user_metadata: {
-      name?: string;
-      avatar_url?: string;
-      picture?: string;
-    };
-  };
 }
 
 export interface Comment {
   id: string;
   post_id: string;
   user_id: string;
+  author_name: string;
+  author_avatar_url: string | null;
   content: string;
   created_at: string;
   updated_at: string;
-  // Join된 사용자 정보
-  user?: {
-    email: string;
-    user_metadata: {
-      name?: string;
-      avatar_url?: string;
-      picture?: string;
-    };
-  };
 }
 
 export interface CreatePostInput {
@@ -190,11 +176,16 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     throw new Error("로그인이 필요합니다.");
   }
 
+  const authorName = user.user_metadata?.name || user.email?.split("@")[0] || "Unknown";
+  const authorAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
   const { data, error } = await supabase
     .from("posts")
     .insert({
       ...input,
       user_id: user.id,
+      author_name: authorName,
+      author_avatar_url: authorAvatarUrl,
     })
     .select()
     .single();
@@ -267,11 +258,16 @@ export async function createComment(postId: string, content: string): Promise<Co
     throw new Error("로그인이 필요합니다.");
   }
 
+  const authorName = user.user_metadata?.name || user.email?.split("@")[0] || "Unknown";
+  const authorAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+
   const { data, error } = await supabase
     .from("comments")
     .insert({
       post_id: postId,
       user_id: user.id,
+      author_name: authorName,
+      author_avatar_url: authorAvatarUrl,
       content,
     })
     .select()
