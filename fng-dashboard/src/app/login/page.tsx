@@ -18,6 +18,26 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const playTransitionSoundAndNavigate = (callback?: () => void) => {
+    const audio = new Audio("/sound/fear_hunger_noise.ogg");
+    audio.volume = 0.5;
+
+    audio.play().catch(() => {
+      // 자동재생 차단 시 바로 이동
+      router.push("/dashboard");
+    });
+
+    audio.onended = () => {
+      if (callback) callback();
+      else router.push("/dashboard");
+    };
+
+    audio.onerror = () => {
+      if (callback) callback();
+      else router.push("/dashboard");
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -29,7 +49,7 @@ export default function LoginPage() {
       setError("이메일 또는 비밀번호가 올바르지 않습니다.");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      playTransitionSoundAndNavigate();
     }
   };
 
@@ -38,6 +58,7 @@ export default function LoginPage() {
     if (error) {
       setError("Google 로그인에 실패했습니다.");
     }
+    // Google 로그인은 리다이렉트 방식이라 별도 처리 불필요
   };
 
   return (
@@ -131,7 +152,7 @@ export default function LoginPage() {
           {/* Google 로그인 버튼 */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg mb-4"
+            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -153,13 +174,6 @@ export default function LoginPage() {
             </svg>
             <span className={fontClass}>Google로 로그인</span>
           </button>
-
-          {/* 비회원 입장 */}
-          <Link href="/dashboard" className="block">
-            <button className="dark-btn w-full text-sm">
-              비회원 입장
-            </button>
-          </Link>
 
           {/* 회원가입 링크 */}
           <div className="mt-6 text-center">

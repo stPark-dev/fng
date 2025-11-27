@@ -8,9 +8,6 @@ export const translations = {
       descend: "입장하기",
       signIn: "로그인",
       join: "가입하기",
-      inTheDepths: "시장의 깊은 곳에서...",
-      whereHopeDies: "희망이 죽어가는 곳에서...",
-      willYouSurvive: "살아남을 수 있겠는가?",
     },
     // Header
     header: {
@@ -34,7 +31,7 @@ export const translations = {
       chroniclesOfYear: "⛧ 연간 기록 ⛧",
       peakMadness: "최고의 광기",
       deepestTerror: "최심의 공포",
-      whispersFromVoid: "💡 투자 명언",
+      whispersFromVoid: "투자 명언",
     },
     // Chart
     chart: {
@@ -104,9 +101,6 @@ export const translations = {
       descend: "DESCEND",
       signIn: "SIGN IN",
       join: "JOIN",
-      inTheDepths: "IN THE DEPTHS OF THE MARKET...",
-      whereHopeDies: "WHERE HOPE GOES TO DIE...",
-      willYouSurvive: "WILL YOU SURVIVE?",
     },
     // Header
     header: {
@@ -130,7 +124,7 @@ export const translations = {
       chroniclesOfYear: "⛧ CHRONICLES OF THE YEAR ⛧",
       peakMadness: "PEAK MADNESS",
       deepestTerror: "DEEPEST TERROR",
-      whispersFromVoid: "💡 INVESTMENT WISDOM",
+      whispersFromVoid: "INVESTMENT WISDOM",
     },
     // Chart
     chart: {

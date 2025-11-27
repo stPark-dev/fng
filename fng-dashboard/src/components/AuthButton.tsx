@@ -3,13 +3,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n-context";
 import { useAuth } from "@/lib/auth-context";
 
 export default function AuthButton() {
   const { user, loading, signOut } = useAuth();
   const { fontClass } = useI18n();
+  const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setShowDropdown(false);
+    router.push("/");
+  };
 
   if (loading) {
     return (
@@ -58,10 +66,7 @@ export default function AuthButton() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  signOut();
-                  setShowDropdown(false);
-                }}
+                onClick={handleSignOut}
                 className={`${fontClass} w-full text-left px-3 py-2 text-xs text-[#8b0000] hover:bg-[#1a1512] transition-colors mt-1`}
               >
                 로그아웃

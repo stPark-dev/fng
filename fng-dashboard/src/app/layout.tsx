@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Press_Start_2P, Noto_Sans_KR } from "next/font/google";
+import { Press_Start_2P, Black_And_White_Picture } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n-context";
 import { AuthProvider } from "@/lib/auth-context";
@@ -10,9 +10,9 @@ const pressStart2P = Press_Start_2P({
   variable: "--font-retro",
 });
 
-const notoSansKR = Noto_Sans_KR({
-  weight: ["700", "900"],
-  subsets: ["latin"],
+const blackAndWhitePicture = Black_And_White_Picture({
+  weight: "400",
+  subsets: ["latin", "korean"],
   variable: "--font-korean",
 });
 
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="dark">
-      <body className={`${pressStart2P.variable} ${notoSansKR.variable} antialiased`}>
+      <body className={`${pressStart2P.variable} ${blackAndWhitePicture.variable} antialiased`}>
         <AuthProvider>
           <I18nProvider>{children}</I18nProvider>
         </AuthProvider>

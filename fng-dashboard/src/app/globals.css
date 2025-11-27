@@ -2,16 +2,18 @@
 
 :root {
   --background: #0d0a08;
-  --foreground: #c4b59d;
-  --blood: #8b0000;
-  --blood-dark: #4a0000;
-  --rust: #8b4513;
-  --bone: #c4b59d;
+  --foreground: #d4c4a8;
+  --blood: #a01010;
+  --blood-dark: #5a0000;
+  --blood-glow: #ff2020;
+  --rust: #a05a20;
+  --bone: #e0d4c0;
+  --bone-dim: #a09080;
   --flesh: #d4a574;
   --shadow: #1a1512;
-  --parchment: #d4c4a8;
+  --parchment: #e8dcc8;
   --font-retro: "Press Start 2P", cursive;
-  --font-korean: var(--font-korean), "Noto Sans KR", sans-serif;
+  --font-korean: var(--font-korean), sans-serif;
 }
 
 @theme inline {
@@ -25,65 +27,69 @@ body {
   font-family: var(--font-retro), monospace;
 }
 
-/* 한글 폰트 스타일 - 크게, 굵게 */
+/* 기본 텍스트 크기 증가 */
+html {
+  font-size: 18px;
+}
+
+/* 한글 폰트 스타일 */
 :lang(ko),
 [lang="ko"],
 .korean-text {
-  font-family: var(--font-korean), "Noto Sans KR", sans-serif;
-  font-weight: 700;
+  font-family: var(--font-korean), sans-serif;
 }
 
-/* 한글이 포함된 요소들 스타일 강화 */
-html[lang="ko"] h1,
-html[lang="ko"] h2,
-html[lang="ko"] h3,
-html[lang="ko"] h4,
-html[lang="ko"] h5,
-html[lang="ko"] h6 {
-  font-weight: 900;
-}
-
-/* 한글 텍스트 크기 보정 (기본 크기를 더 크게) */
-html[lang="ko"] .text-xs {
-  font-size: 0.875rem !important; /* 12px -> 14px */
-  line-height: 1.4;
-}
-
-html[lang="ko"] .text-sm {
-  font-size: 1rem !important; /* 14px -> 16px */
+/* 텍스트 크기 클래스 재정의 - 더 큰 크기 */
+.text-xs {
+  font-size: 0.875rem !important; /* 약 16px */
   line-height: 1.5;
 }
 
-html[lang="ko"] .text-base {
-  font-size: 1.125rem !important; /* 16px -> 18px */
+.text-sm {
+  font-size: 1rem !important; /* 18px */
   line-height: 1.6;
 }
 
-html[lang="ko"] .text-lg {
-  font-size: 1.375rem !important; /* 18px -> 22px */
+.text-base {
+  font-size: 1.125rem !important; /* 약 20px */
   line-height: 1.6;
 }
 
-html[lang="ko"] .text-xl {
-  font-size: 1.5rem !important; /* 20px -> 24px */
+.text-lg {
+  font-size: 1.375rem !important; /* 약 25px */
   line-height: 1.5;
 }
 
-html[lang="ko"] .text-\[10px\] {
-  font-size: 0.75rem !important; /* 10px -> 12px */
+.text-xl {
+  font-size: 1.625rem !important; /* 약 29px */
   line-height: 1.4;
 }
 
-html[lang="ko"] .text-\[9px\] {
-  font-size: 0.6875rem !important; /* 9px -> 11px */
-  line-height: 1.4;
+.text-2xl {
+  font-size: 2rem !important; /* 36px */
+  line-height: 1.3;
+}
+
+.text-3xl {
+  font-size: 2.5rem !important; /* 45px */
+  line-height: 1.2;
+}
+
+.text-4xl {
+  font-size: 3rem !important; /* 54px */
+  line-height: 1.1;
+}
+
+.text-5xl {
+  font-size: 3.5rem !important; /* 63px */
+  line-height: 1.1;
 }
 
 /* 다크 판타지 스타일 */
 .dark-box {
-  background: linear-gradient(180deg, rgba(26, 21, 18, 0.85) 0%, rgba(13, 10, 8, 0.8) 100%);
-  border: 2px solid #3d2d1f;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, rgba(35, 28, 22, 0.95) 0%, rgba(20, 15, 12, 0.95) 100%);
+  border: 2px solid #4a3828;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6), 0 4px 20px rgba(0, 0, 0, 0.7);
   position: relative;
   backdrop-filter: blur(8px);
 }
@@ -95,39 +101,41 @@ html[lang="ko"] .text-\[9px\] {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
   pointer-events: none;
 }
 
 .blood-border {
-  border: 2px solid var(--blood);
-  box-shadow: 0 0 10px var(--blood-dark), inset 0 0 10px rgba(139, 0, 0, 0.2);
+  border: 3px solid var(--blood);
+  box-shadow: 0 0 20px var(--blood-dark), inset 0 0 15px rgba(160, 16, 16, 0.3);
 }
 
 .parchment-box {
-  background: linear-gradient(180deg, #d4c4a8 0%, #c4b498 100%);
+  background: linear-gradient(180deg, #e8dcc8 0%, #d4c4a8 100%);
   border: 3px solid #8b7355;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.5);
   color: #2d1f14;
 }
 
 .dark-btn {
   font-family: var(--font-retro), monospace;
-  background: linear-gradient(180deg, #2d1f14 0%, #1a1512 100%);
-  border: 2px solid #5c4033;
+  background: linear-gradient(180deg, #3a2a1a 0%, #251a10 100%);
+  border: 2px solid #6a5040;
   color: var(--bone);
-  padding: 12px 24px;
+  padding: 14px 28px;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
   position: relative;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
 }
 
 .dark-btn:hover {
-  background: linear-gradient(180deg, #3d2d1f 0%, #2d1f14 100%);
+  background: linear-gradient(180deg, #4a3a28 0%, #3a2a1a 100%);
   border-color: var(--blood);
-  color: var(--blood);
-  box-shadow: 0 0 15px var(--blood-dark);
+  color: var(--blood-glow);
+  box-shadow: 0 0 20px var(--blood-dark);
 }
 
 .dark-btn:active {
@@ -137,20 +145,23 @@ html[lang="ko"] .text-\[9px\] {
 .blood-btn {
   font-family: var(--font-retro), monospace;
   background: linear-gradient(180deg, var(--blood) 0%, var(--blood-dark) 100%);
-  border: 2px solid #5c0000;
-  color: #ffd4d4;
-  padding: 12px 24px;
+  border: 2px solid #700000;
+  color: #ffe0e0;
+  padding: 14px 28px;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .blood-btn:hover {
-  background: linear-gradient(180deg, #a00000 0%, var(--blood) 100%);
-  box-shadow: 0 0 20px var(--blood-dark);
+  background: linear-gradient(180deg, #c01818 0%, var(--blood) 100%);
+  box-shadow: 0 0 30px var(--blood-dark), 0 0 60px rgba(160, 16, 16, 0.3);
 }
 
-/* 비네트 효과 */
+/* 비네트 효과 - 약하게 조정 */
 .vignette::after {
   content: "";
   position: fixed;
@@ -161,14 +172,14 @@ html[lang="ko"] .text-\[9px\] {
   background: radial-gradient(
     ellipse at center,
     transparent 0%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.8) 100%
+    transparent 60%,
+    rgba(0, 0, 0, 0.5) 100%
   );
   pointer-events: none;
   z-index: 100;
 }
 
-/* 노이즈/그레인 효과 */
+/* 노이즈/그레인 효과 - 약하게 조정 */
 .grain::before {
   content: "";
   position: fixed;
@@ -176,10 +187,10 @@ html[lang="ko"] .text-\[9px\] {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 99;
-  opacity: 0.4;
+  opacity: 0.25;
 }
 
 /* 피 흘림 효과 */

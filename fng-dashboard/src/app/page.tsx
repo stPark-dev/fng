@@ -39,17 +39,6 @@ export default function LandingPage() {
           <div className="w-32 h-[2px] bg-gradient-to-r from-transparent via-[#8b0000] to-transparent mx-auto my-4" />
         </div>
 
-        {/* 중앙 - 분위기 있는 텍스트 */}
-        <div className="text-center my-8">
-          <p className={`${fontClass} text-xs text-[#666] leading-loose max-w-md`}>
-            {t.landing.inTheDepths}
-            <br />
-            {t.landing.whereHopeDies}
-            <br />
-            <span className="text-[#8b0000]">{t.landing.willYouSurvive}</span>
-          </p>
-        </div>
-
         {/* 하단 로그인/회원가입 */}
         <div className="dark-box p-8 mb-12 w-full max-w-md blood-border">
           <div className="text-center mb-8">
@@ -61,18 +50,17 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-4">
-            <Link href="/dashboard" className="block">
-              <button className="blood-btn w-full text-sm md:text-base">{t.landing.descend}</button>
+            <Link href="/login" className="block">
+              <button className="blood-btn w-full text-sm md:text-base">
+                {t.landing.signIn}
+              </button>
             </Link>
 
-            <div className="flex gap-4">
-              <Link href="/login" className="flex-1">
-                <button className="dark-btn w-full text-xs">{t.landing.signIn}</button>
-              </Link>
-              <Link href="/signup" className="flex-1">
-                <button className="dark-btn w-full text-xs">{t.landing.join}</button>
-              </Link>
-            </div>
+            <Link href="/signup" className="block">
+              <button className="dark-btn w-full text-sm">
+                {t.landing.join}
+              </button>
+            </Link>
           </div>
 
           <div className="mt-6 pt-4 border-t border-[#3d2d1f] text-center">
