@@ -10,11 +10,11 @@ interface DarkGaugeProps {
 }
 
 function getDarkColor(value: number): string {
-  if (value <= 20) return "#8b0000";
-  if (value <= 40) return "#a04000";
-  if (value <= 60) return "#8b7355";
-  if (value <= 80) return "#6b8e23";
-  return "#4a0080";
+  if (value <= 20) return "#ff4444";
+  if (value <= 40) return "#ff8844";
+  if (value <= 60) return "#ccaa66";
+  if (value <= 80) return "#88bb44";
+  return "#aa44ff";
 }
 
 export default function DarkGauge({ value, classification, change }: DarkGaugeProps) {
@@ -51,67 +51,69 @@ export default function DarkGauge({ value, classification, change }: DarkGaugePr
   const filledBars = Math.floor((value / 100) * bars);
 
   return (
-    <div className="dark-box p-6 blood-border">
-      <h2 className={`${fontClass} text-sm text-[#8b0000] mb-6 text-center`}>
+    <div className="dark-box p-6 blood-border h-full flex flex-col">
+      <h2 className={`${fontClass} text-base text-[#c03030] mb-6 text-center`}>
         {t.gauge.soulStatus}
       </h2>
 
       {/* 숫자 표시 */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 flex-1 flex flex-col justify-center">
         <div
-          className={`${fontClass} text-5xl md:text-6xl`}
+          className={`${fontClass} text-6xl md:text-7xl`}
           style={{
             color,
-            textShadow: `0 0 20px ${color}, 0 0 40px ${color}40`
+            textShadow: `0 0 30px ${color}, 0 0 60px ${color}40`,
           }}
         >
           {displayValue}
         </div>
-        <div
-          className={`${fontClass} text-sm mt-4`}
-          style={{ color }}
-        >
+        <div className={`${fontClass} text-2xl mt-4`} style={{ color }}>
           {label}
         </div>
-        <div className={`${fontClass} text-xs text-[#5c4033] mt-2`}>
-          {classification}
-        </div>
+        <div className={`${fontClass} text-sm text-[#907050] mt-2`}>{classification}</div>
       </div>
 
       {/* 다크 판타지 체력바 */}
       <div className="mb-6">
-        <div className="flex justify-center gap-[2px]">
+        <div className="flex justify-center gap-1">
           {Array.from({ length: bars }).map((_, i) => {
-            const barColor = i < 2 ? "#8b0000" : i < 4 ? "#a04000" : i < 6 ? "#8b7355" : i < 8 ? "#6b8e23" : "#4a0080";
+            const barColor =
+              i < 2
+                ? "#ff4444"
+                : i < 4
+                ? "#ff8844"
+                : i < 6
+                ? "#ccaa66"
+                : i < 8
+                ? "#88bb44"
+                : "#aa44ff";
             const isFilled = i < filledBars;
             return (
               <div
                 key={i}
-                className="w-5 h-6 border transition-all duration-300"
+                className="w-6 h-8 border-2 transition-all duration-300"
                 style={{
-                  borderColor: "#3d2d1f",
+                  borderColor: "#4a3828",
                   backgroundColor: isFilled ? barColor : "#1a1512",
-                  boxShadow: isFilled ? `0 0 8px ${barColor}` : "inset 0 0 5px rgba(0,0,0,0.5)",
+                  boxShadow: isFilled ? `0 0 10px ${barColor}` : "inset 0 0 5px rgba(0,0,0,0.5)",
                 }}
               />
             );
           })}
         </div>
-        <div className="flex justify-between mt-2 px-1">
-          <span className={`${fontClass} text-[10px] text-[#8b0000]`}>{t.gauge.fear}</span>
-          <span className={`${fontClass} text-[10px] text-[#4a0080]`}>{t.gauge.greed}</span>
+        <div className="flex justify-between mt-3 px-1">
+          <span className={`${fontClass} text-sm text-[#ff4444]`}>{t.gauge.fear}</span>
+          <span className={`${fontClass} text-sm text-[#aa44ff]`}>{t.gauge.greed}</span>
         </div>
       </div>
 
       {/* 변동폭 */}
       {change !== undefined && (
-        <div className="text-center border-t border-[#3d2d1f] pt-4">
-          <span className={`${fontClass} text-xs text-[#5c4033]`}>
-            {t.gauge.sinceYesterday}{" "}
-          </span>
+        <div className="text-center border-t border-[#4a3828] pt-4">
+          <span className={`${fontClass} text-sm text-[#907050]`}>{t.gauge.sinceYesterday} </span>
           <span
-            className={`${fontClass} text-sm`}
-            style={{ color: change > 0 ? "#6b8e23" : change < 0 ? "#8b0000" : "#5c4033" }}
+            className={`${fontClass} text-lg`}
+            style={{ color: change > 0 ? "#88bb44" : change < 0 ? "#ff4444" : "#907050" }}
           >
             {change > 0 ? "+" : ""}
             {change}
@@ -122,17 +124,15 @@ export default function DarkGauge({ value, classification, change }: DarkGaugePr
       {/* 범례 */}
       <div className="mt-6 grid grid-cols-5 gap-1 text-center">
         {[
-          { label: t.gauge.terror, color: "#8b0000" },
-          { label: t.gauge.dread, color: "#a04000" },
-          { label: t.gauge.unease, color: "#8b7355" },
-          { label: t.gauge.desire, color: "#6b8e23" },
-          { label: t.gauge.madness, color: "#4a0080" },
+          { label: t.gauge.terror, color: "#ff4444" },
+          { label: t.gauge.dread, color: "#ff8844" },
+          { label: t.gauge.unease, color: "#ccaa66" },
+          { label: t.gauge.desire, color: "#88bb44" },
+          { label: t.gauge.madness, color: "#aa44ff" },
         ].map(({ label, color }) => (
           <div key={label}>
-            <div className="w-full h-2 mb-1" style={{ backgroundColor: color }} />
-            <span className={`${fontClass} text-[9px] text-[#5c4033]`}>
-              {label}
-            </span>
+            <div className="w-full h-3 mb-1" style={{ backgroundColor: color, boxShadow: `0 0 5px ${color}` }} />
+            <span className={`${fontClass} text-xs text-[#a08060]`}>{label}</span>
           </div>
         ))}
       </div>

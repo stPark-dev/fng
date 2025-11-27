@@ -36,7 +36,10 @@ export const translations = {
     // Chart
     chart: {
       cursedTimeline: "⛧ 저주받은 타임라인 ⛧",
+      days7: "7일",
       days30: "30일",
+      months2: "2개월",
+      months3: "3개월",
       year1: "1년",
       years2: "2년",
       terrorZone: "공포 구역",
@@ -129,7 +132,10 @@ export const translations = {
     // Chart
     chart: {
       cursedTimeline: "⛧ THE CURSED TIMELINE ⛧",
+      days7: "7 DAYS",
       days30: "30 DAYS",
+      months2: "2 MONTHS",
+      months3: "3 MONTHS",
       year1: "1 YEAR",
       years2: "2 YEARS",
       terrorZone: "TERROR ZONE",

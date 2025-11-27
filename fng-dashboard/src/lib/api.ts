@@ -80,16 +80,27 @@ export async function fetchFngData(limit: number = 30): Promise<FngDataPoint[]> 
   return data.map(transformRecord);
 }
 
+export type FngPeriod = "7d" | "30d" | "2m" | "3m" | "1y" | "2y";
+
 /**
  * 기간별 데이터 가져오기
  */
-export async function fetchFngByPeriod(period: "30d" | "1y" | "2y"): Promise<FngDataPoint[]> {
+export async function fetchFngByPeriod(period: FngPeriod): Promise<FngDataPoint[]> {
   const now = new Date();
   let fromDate: Date | null = null;
 
   switch (period) {
+    case "7d":
+      fromDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      break;
     case "30d":
       fromDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      break;
+    case "2m":
+      fromDate = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+      break;
+    case "3m":
+      fromDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
       break;
     case "1y":
       fromDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);

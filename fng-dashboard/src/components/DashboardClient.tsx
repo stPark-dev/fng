@@ -23,12 +23,8 @@ interface DashboardClientProps {
 function TomeBox({ title, text, fontClass }: { title: string; text: string; fontClass: string }) {
   return (
     <div className="dark-box p-5">
-      <h3 className={`${fontClass} text-base text-[#c03030] mb-3`}>
-        {title}
-      </h3>
-      <p className={`${fontClass} text-sm text-[#b8a080] leading-relaxed`}>
-        {text}
-      </p>
+      <h3 className={`${fontClass} text-base text-[#c03030] mb-3`}>{title}</h3>
+      <p className={`${fontClass} text-sm text-[#b8a080] leading-relaxed`}>{text}</p>
     </div>
   );
 }
@@ -89,7 +85,9 @@ export default function DashboardClient({
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <h1 className={`${fontClass} text-base md:text-lg text-[#e0d0b8] drop-shadow-[2px_2px_0px_#000] hover:text-[#c03030] transition-colors cursor-pointer`}>
+              <h1
+                className={`${fontClass} text-3xl md:text-lg text-[#e0d0b8] drop-shadow-[2px_2px_0px_#000] hover:text-[#c03030] transition-colors cursor-pointer`}
+              >
                 {t.header.title}
               </h1>
             </Link>
@@ -100,24 +98,47 @@ export default function DashboardClient({
                 title={isMuted ? "음악 켜기" : "음악 끄기"}
               >
                 {isMuted ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+                    />
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                    />
                   </svg>
                 )}
               </button>
               <LanguageSwitch />
               <div className="text-right hidden sm:block">
-                <p className={`${fontClass} text-xs text-[#907050]`}>
-                  {t.header.lastOffering}
-                </p>
-                <p className={`${fontClass} text-sm text-[#c09050]`}>
-                  {formatDate(current.date)}
-                </p>
+                <p className={`${fontClass} text-xs text-[#907050]`}>{t.header.lastOffering}</p>
+                <p className={`${fontClass} text-sm text-[#c09050]`}>{formatDate(current.date)}</p>
               </div>
               <AuthButton />
             </div>
@@ -151,16 +172,8 @@ export default function DashboardClient({
             text={t.info.whatIsThisCurseText}
             fontClass={fontClass}
           />
-          <TomeBox
-            title={t.info.theOracle}
-            text={t.info.theOracleText}
-            fontClass={fontClass}
-          />
-          <TomeBox
-            title={t.info.aWarning}
-            text={t.info.aWarningText}
-            fontClass={fontClass}
-          />
+          <TomeBox title={t.info.theOracle} text={t.info.theOracleText} fontClass={fontClass} />
+          <TomeBox title={t.info.aWarning} text={t.info.aWarningText} fontClass={fontClass} />
         </div>
       </main>
 
@@ -168,9 +181,7 @@ export default function DashboardClient({
       <footer className="border-t-2 border-[#4a3828] mt-12 bg-gradient-to-t from-[#1a1512] to-[#0d0a08]">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex flex-col items-center gap-4">
-            <p className={`${fontClass} text-sm text-[#907050]`}>
-              {t.footer.dataExtracted}
-            </p>
+            <p className={`${fontClass} text-sm text-[#907050]`}>{t.footer.dataExtracted}</p>
             <a
               href="https://github.com/stPark-dev/"
               target="_blank"

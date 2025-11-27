@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -10,8 +10,10 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  Area,
+  AreaChart,
 } from "recharts";
-import { FngDataPoint } from "@/lib/api";
+import { FngDataPoint, FngPeriod, fetchFngByPeriod } from "@/lib/api";
 import { useI18n } from "@/lib/i18n-context";
 
 interface DarkChartProps {
@@ -20,33 +22,77 @@ interface DarkChartProps {
   data2y: FngDataPoint[];
 }
 
-type Period = "30d" | "1y" | "2y";
-
 function getDarkColor(value: number): string {
-  if (value <= 20) return "#8b0000";
-  if (value <= 40) return "#a04000";
-  if (value <= 60) return "#8b7355";
-  if (value <= 80) return "#6b8e23";
-  return "#4a0080";
+  if (value <= 20) return "#ff4444";
+  if (value <= 40) return "#ff8844";
+  if (value <= 60) return "#ccaa66";
+  if (value <= 80) return "#88bb44";
+  return "#aa44ff";
 }
 
 export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
-  const [period, setPeriod] = useState<Period>("30d");
+  const [period, setPeriod] = useState<FngPeriod>("30d");
+  const [dynamicData, setDynamicData] = useState<FngDataPoint[] | null>(null);
+  const [loading, setLoading] = useState(false);
   const { t, locale, fontClass } = useI18n();
 
-  const periodData = {
+  // 서버에서 전달받은 데이터
+  const preloadedData: Record<string, FngDataPoint[]> = {
     "30d": data30d,
     "1y": data1y,
     "2y": data2y,
   };
 
-  const data = periodData[period];
+  // 동적으로 로드해야 하는 기간들
+  const needsDynamicLoad = ["7d", "2m", "3m"].includes(period);
+
+  useEffect(() => {
+    if (needsDynamicLoad) {
+      setLoading(true);
+      fetchFngByPeriod(period)
+        .then(setDynamicData)
+        .finally(() => setLoading(false));
+    } else {
+      setDynamicData(null);
+    }
+  }, [period, needsDynamicLoad]);
+
+  const data = needsDynamicLoad ? dynamicData : preloadedData[period];
+
+  // 데이터가 없거나 로딩 중일 때 처리
+  if (!data || loading) {
+    return (
+      <div className="dark-box p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className={`${fontClass} text-base text-[#c03030]`}>
+            {t.chart.cursedTimeline}
+          </h2>
+        </div>
+        <div className="h-80 flex items-center justify-center">
+          <p className={`${fontClass} text-sm text-[#907050]`}>
+            {loading ? "Loading..." : "No data"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 기간에 따른 날짜 포맷
+  const getDateFormat = (period: FngPeriod) => {
+    if (["7d", "30d"].includes(period)) {
+      return { month: "short" as const, day: "numeric" as const };
+    }
+    if (["2m", "3m"].includes(period)) {
+      return { month: "short" as const, day: "numeric" as const };
+    }
+    return { year: "2-digit" as const, month: "short" as const };
+  };
 
   const chartData = [...data].reverse().map((item) => ({
-    date:
-      period === "30d"
-        ? item.date.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", { month: "short", day: "numeric" })
-        : item.date.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", { year: "2-digit", month: "short" }),
+    date: item.date.toLocaleDateString(
+      locale === "ko" ? "ko-KR" : "en-US",
+      getDateFormat(period)
+    ),
     fullDate: item.date.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", {
       year: "numeric",
       month: "long",
@@ -76,18 +122,18 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
       const color = getDarkColor(data.value);
 
       return (
-        <div className="dark-box p-3 blood-border">
-          <p className={`${fontClass} text-[10px] text-[#5c4033]`}>
+        <div className="dark-box p-4 blood-border">
+          <p className={`${fontClass} text-sm text-[#a08060]`}>
             {data.fullDate}
           </p>
           <p
-            className={`${fontClass} text-xl mt-1`}
-            style={{ color, textShadow: `0 0 10px ${color}` }}
+            className={`${fontClass} text-2xl mt-2 font-bold`}
+            style={{ color, textShadow: `0 0 15px ${color}` }}
           >
             {data.value}
           </p>
           <p
-            className={`${fontClass} text-xs mt-1`}
+            className={`${fontClass} text-sm mt-1`}
             style={{ color }}
           >
             {getDarkLabel(data.value)}
@@ -98,28 +144,44 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
     return null;
   };
 
-  const periodButtons = [
-    { key: "30d" as Period, label: t.chart.days30 },
-    { key: "1y" as Period, label: t.chart.year1 },
-    { key: "2y" as Period, label: t.chart.years2 },
+  const periodButtons: { key: FngPeriod; label: string }[] = [
+    { key: "7d", label: t.chart.days7 },
+    { key: "30d", label: t.chart.days30 },
+    { key: "2m", label: t.chart.months2 },
+    { key: "3m", label: t.chart.months3 },
+    { key: "1y", label: t.chart.year1 },
+    { key: "2y", label: t.chart.years2 },
   ];
+
+  // 기간에 따른 X축 간격
+  const getXAxisInterval = (period: FngPeriod) => {
+    switch (period) {
+      case "7d": return 0;
+      case "30d": return 4;
+      case "2m": return 7;
+      case "3m": return 10;
+      case "1y": return 30;
+      case "2y": return 60;
+      default: return "preserveStartEnd";
+    }
+  };
 
   return (
     <div className="dark-box p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className={`${fontClass} text-sm text-[#8b0000]`}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 className={`${fontClass} text-base text-[#c03030]`}>
           {t.chart.cursedTimeline}
         </h2>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {periodButtons.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setPeriod(key)}
-              className={`${fontClass} text-xs px-3 py-1 border-2 transition-all ${
+              className={`${fontClass} text-sm px-4 py-2 border-2 transition-all ${
                 period === key
-                  ? "border-[#8b0000] bg-[#8b0000] text-[#ffd4d4] shadow-[0_0_10px_#8b000080]"
-                  : "border-[#3d2d1f] text-[#5c4033] hover:border-[#8b0000] hover:text-[#8b0000]"
+                  ? "border-[#c03030] bg-[#c03030] text-[#fff0f0] shadow-[0_0_15px_#c0303080]"
+                  : "border-[#4a3828] text-[#a08060] hover:border-[#c03030] hover:text-[#c03030]"
               }`}
             >
               {label}
@@ -128,68 +190,75 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
         </div>
       </div>
 
-      <div className="h-80">
+      <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2d1f14" />
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#c03030" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#c03030" stopOpacity={0.05}/>
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid strokeDasharray="3 3" stroke="#3a2a1a" />
 
             <XAxis
               dataKey="date"
-              stroke="#3d2d1f"
-              tick={{ fill: "#5c4033", fontSize: 9, fontFamily: "monospace" }}
-              tickLine={{ stroke: "#3d2d1f" }}
-              interval={period === "30d" ? 4 : period === "1y" ? 30 : 60}
+              stroke="#4a3828"
+              tick={{ fill: "#a08060", fontSize: 12, fontFamily: "monospace" }}
+              tickLine={{ stroke: "#4a3828" }}
+              interval={getXAxisInterval(period)}
             />
 
             <YAxis
               domain={[0, 100]}
-              stroke="#3d2d1f"
-              tick={{ fill: "#5c4033", fontSize: 9, fontFamily: "monospace" }}
-              tickLine={{ stroke: "#3d2d1f" }}
+              stroke="#4a3828"
+              tick={{ fill: "#a08060", fontSize: 12, fontFamily: "monospace" }}
+              tickLine={{ stroke: "#4a3828" }}
               ticks={[0, 20, 40, 60, 80, 100]}
             />
 
             <Tooltip content={<CustomTooltip />} />
 
             {/* 구간 참조선 */}
-            <ReferenceLine y={20} stroke="#8b0000" strokeDasharray="5 5" strokeOpacity={0.4} />
-            <ReferenceLine y={50} stroke="#8b7355" strokeDasharray="5 5" strokeOpacity={0.3} />
-            <ReferenceLine y={80} stroke="#4a0080" strokeDasharray="5 5" strokeOpacity={0.4} />
+            <ReferenceLine y={20} stroke="#ff4444" strokeDasharray="5 5" strokeOpacity={0.5} />
+            <ReferenceLine y={50} stroke="#ccaa66" strokeDasharray="5 5" strokeOpacity={0.4} />
+            <ReferenceLine y={80} stroke="#aa44ff" strokeDasharray="5 5" strokeOpacity={0.5} />
 
-            {/* 메인 라인 - 피 색상 */}
-            <Line
+            {/* 영역 채우기 */}
+            <Area
               type="monotone"
               dataKey="value"
-              stroke="#8b0000"
-              strokeWidth={2}
-              dot={false}
+              stroke="#c03030"
+              strokeWidth={3}
+              fill="url(#colorValue)"
               activeDot={{
-                r: 6,
-                fill: "#8b0000",
-                stroke: "#ffd4d4",
-                strokeWidth: 2,
+                r: 8,
+                fill: "#c03030",
+                stroke: "#fff0f0",
+                strokeWidth: 3,
               }}
               style={{
-                filter: "drop-shadow(0 0 6px #8b0000)",
+                filter: "drop-shadow(0 0 8px #c03030)",
               }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
       {/* 범례 */}
-      <div className="flex justify-center gap-8 mt-4">
+      <div className="flex flex-wrap justify-center gap-6 mt-6">
         {[
-          { label: t.chart.terrorZone, color: "#8b0000", value: "0-20" },
-          { label: t.chart.neutralVoid, color: "#8b7355", value: "40-60" },
-          { label: t.chart.madnessRealm, color: "#4a0080", value: "80-100" },
+          { label: t.chart.terrorZone, color: "#ff4444", value: "0-20" },
+          { label: t.chart.neutralVoid, color: "#ccaa66", value: "40-60" },
+          { label: t.chart.madnessRealm, color: "#aa44ff", value: "80-100" },
         ].map(({ label, color, value }) => (
           <div key={label} className="flex items-center gap-2">
             <div
-              className="w-3 h-3"
-              style={{ backgroundColor: color, boxShadow: `0 0 5px ${color}` }}
+              className="w-4 h-4"
+              style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
             />
-            <span className={`${fontClass} text-[10px] text-[#5c4033]`}>
+            <span className={`${fontClass} text-sm text-[#a08060]`}>
               {label} ({value})
             </span>
           </div>
