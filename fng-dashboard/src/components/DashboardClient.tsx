@@ -7,7 +7,9 @@ import DarkGauge from "@/components/DarkGauge";
 import DarkChart from "@/components/DarkChart";
 import DarkStats from "@/components/DarkStats";
 import Link from "next/link";
+import Image from "next/image";
 import { FngDataPoint } from "@/lib/api";
+import fngLogoSrc from "../../public/fng_logo.png";
 
 interface DashboardClientProps {
   current: FngDataPoint;
@@ -57,7 +59,12 @@ export default function DashboardClient({
               <h1
                 className={`${fontClass} text-3xl md:text-lg text-[#e0d0b8] drop-shadow-[2px_2px_0px_#000] hover:text-[#c03030] transition-colors cursor-pointer`}
               >
-                {t.header.title}
+                <Image
+                  src={fngLogoSrc}
+                  width={Math.round(1060 / 4)}
+                  height={Math.round(162 / 4)}
+                  alt="Header logo"
+                />
               </h1>
             </Link>
             <div className="flex items-center gap-4">

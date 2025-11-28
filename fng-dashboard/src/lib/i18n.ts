@@ -11,7 +11,6 @@ export const translations = {
     },
     // Header
     header: {
-      title: "⛧ 공포 & 탐욕 ⛧",
       lastOffering: "최종 업데이트",
     },
     // Gauge
@@ -105,7 +104,6 @@ export const translations = {
     },
     // Header
     header: {
-      title: "⛧ FEAR & GREED ⛧",
       lastOffering: "LAST OFFERING",
     },
     // Gauge

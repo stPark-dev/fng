@@ -64,9 +64,7 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
     return (
       <div className="dark-box p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className={`${fontClass} text-base text-[#c03030]`}>
-            {t.chart.cursedTimeline}
-          </h2>
+          <h2 className={`${fontClass} text-base text-[#c03030]`}>{t.chart.cursedTimeline}</h2>
         </div>
         <div className="h-80 flex items-center justify-center">
           <p className={`${fontClass} text-sm text-[#907050]`}>
@@ -90,10 +88,7 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
 
   const chartData = [...data].reverse().map((item, index) => ({
     index, // 고유 인덱스 추가
-    date: item.date.toLocaleDateString(
-      locale === "ko" ? "ko-KR" : "en-US",
-      getDateFormat(period)
-    ),
+    date: item.date.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", getDateFormat(period)),
     fullDate: item.date.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", {
       year: "numeric",
       month: "long",
@@ -124,19 +119,14 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
 
       return (
         <div className="dark-box p-4 blood-border">
-          <p className={`${fontClass} text-sm text-[#a08060]`}>
-            {data.fullDate}
-          </p>
+          <p className={`${fontClass} text-sm text-[#a08060]`}>{data.fullDate}</p>
           <p
             className={`${fontClass} text-2xl mt-2 font-bold`}
             style={{ color, textShadow: `0 0 15px ${color}` }}
           >
             {data.value}
           </p>
-          <p
-            className={`${fontClass} text-sm mt-1`}
-            style={{ color }}
-          >
+          <p className={`${fontClass} text-sm mt-1`} style={{ color }}>
             {getDarkLabel(data.value)}
           </p>
         </div>
@@ -157,22 +147,27 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
   // 기간에 따른 X축 간격
   const getXAxisInterval = (period: FngPeriod) => {
     switch (period) {
-      case "7d": return 0;
-      case "30d": return 4;
-      case "2m": return 7;
-      case "3m": return 10;
-      case "1y": return 30;
-      case "2y": return 60;
-      default: return "preserveStartEnd";
+      case "7d":
+        return 0;
+      case "30d":
+        return 4;
+      case "2m":
+        return 7;
+      case "3m":
+        return 10;
+      case "1y":
+        return 30;
+      case "2y":
+        return 60;
+      default:
+        return "preserveStartEnd";
     }
   };
 
   return (
     <div className="dark-box p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 className={`${fontClass} text-base text-[#c03030]`}>
-          {t.chart.cursedTimeline}
-        </h2>
+        <h2 className={`${fontClass} text-base text-[#c03030]`}>{t.chart.cursedTimeline}</h2>
 
         <div className="flex flex-wrap gap-2">
           {periodButtons.map(({ key, label }) => (
@@ -196,8 +191,8 @@ export default function DarkChart({ data30d, data1y, data2y }: DarkChartProps) {
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#c03030" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#c03030" stopOpacity={0.05}/>
+                <stop offset="5%" stopColor="#c03030" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#c03030" stopOpacity={0.05} />
               </linearGradient>
             </defs>
 
