@@ -52,7 +52,7 @@ export default function DashboardClient({
   return (
     <div className="min-h-screen bg-[#0d0a08] relative vignette grain">
       {/* 헤더 */}
-      <header className="border-b-2 border-[#3d2d1f] bg-gradient-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50 overflow-visible">
+      <header className="border-b-2 border-[#3d2d1f] bg-linear-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50 overflow-visible">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">

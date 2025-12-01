@@ -48,7 +48,7 @@ export default function AuthButton() {
           </button>
 
           {/* 드롭다운 - hover로 표시 */}
-          <div className="absolute top-full right-0 pt-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-[101]">
+          <div className="absolute top-full right-0 pt-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 z-101">
             <div className="w-48 dark-box blood-border p-2 shadow-xl">
               <div className="px-3 py-2 border-b border-[#3d2d1f]">
                 <p className={`${fontClass} text-base text-[#c4b59d] truncate`}>{userName}</p>

@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 import LanguageSwitch from "@/components/LanguageSwitch";
 
 export default function LoginPage() {
-  const { t, fontClass } = useI18n();
+  const { fontClass } = useI18n();
   const { signIn, signInWithGoogle } = useAuth();
   const router = useRouter();
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
       />
 
       {/* 어두운 오버레이 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/50 to-black/80" />
 
       {/* 언어 선택 */}
       <div className="absolute top-4 right-4 z-30">
@@ -85,19 +85,15 @@ export default function LoginPage() {
         <div className="dark-box p-8 w-full max-w-md blood-border">
           {/* 타이틀 */}
           <div className="text-center mb-8">
-            <h1 className={`${fontClass} text-lg text-[#c4b59d] mb-2`}>
-              로그인
-            </h1>
-            <div className="w-24 h-[2px] bg-gradient-to-r from-transparent via-[#8b0000] to-transparent mx-auto" />
+            <h1 className={`${fontClass} text-lg text-[#c4b59d] mb-2`}>로그인</h1>
+            <div className="w-24 h-0.5 bg-linear-to-r from-transparent via-[#8b0000] to-transparent mx-auto" />
           </div>
 
           {/* 이메일 로그인 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* 이메일 */}
             <div>
-              <label className={`${fontClass} text-xs text-[#8b7355] block mb-2`}>
-                이메일
-              </label>
+              <label className={`${fontClass} text-xs text-[#8b7355] block mb-2`}>이메일</label>
               <input
                 type="email"
                 value={email}
@@ -110,9 +106,7 @@ export default function LoginPage() {
 
             {/* 비밀번호 */}
             <div>
-              <label className={`${fontClass} text-xs text-[#8b7355] block mb-2`}>
-                비밀번호
-              </label>
+              <label className={`${fontClass} text-xs text-[#8b7355] block mb-2`}>비밀번호</label>
               <input
                 type="password"
                 value={password}
@@ -124,11 +118,7 @@ export default function LoginPage() {
             </div>
 
             {/* 에러 메시지 */}
-            {error && (
-              <p className={`${fontClass} text-xs text-[#8b0000]`}>
-                {error}
-              </p>
-            )}
+            {error && <p className={`${fontClass} text-xs text-[#8b0000]`}>{error}</p>}
 
             {/* 로그인 버튼 */}
             <button
@@ -142,11 +132,9 @@ export default function LoginPage() {
 
           {/* 구분선 */}
           <div className="flex items-center my-6">
-            <div className="flex-1 h-[1px] bg-[#3d2d1f]" />
-            <span className={`${fontClass} text-xs text-[#5c4033] px-4`}>
-              또는
-            </span>
-            <div className="flex-1 h-[1px] bg-[#3d2d1f]" />
+            <div className="flex-1 h-px bg-[#3d2d1f]" />
+            <span className={`${fontClass} text-xs text-[#5c4033] px-4`}>또는</span>
+            <div className="flex-1 h-px bg-[#3d2d1f]" />
           </div>
 
           {/* Google 로그인 버튼 */}
@@ -177,9 +165,7 @@ export default function LoginPage() {
 
           {/* 회원가입 링크 */}
           <div className="mt-6 text-center">
-            <p className={`${fontClass} text-xs text-[#5c4033] mb-2`}>
-              계정이 없으신가요?
-            </p>
+            <p className={`${fontClass} text-xs text-[#5c4033] mb-2`}>계정이 없으신가요?</p>
             <Link
               href="/signup"
               className={`${fontClass} text-sm text-[#8b0000] hover:text-[#a00000] transition-colors`}

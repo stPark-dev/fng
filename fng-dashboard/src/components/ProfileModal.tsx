@@ -167,7 +167,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center">
+    <div className="fixed inset-0 z-200 flex items-center justify-center">
       {/* 배경 오버레이 */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
@@ -197,7 +197,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         {/* 타이틀 */}
         <div className="text-center mb-6">
           <h2 className={`${fontClass} text-lg text-[#e0d0b8]`}>프로필 수정</h2>
-          <div className="w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c03030] to-transparent mx-auto mt-2" />
+          <div className="w-24 h-0.5 bg-linear-to-r from-transparent via-[#c03030] to-transparent mx-auto mt-2" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

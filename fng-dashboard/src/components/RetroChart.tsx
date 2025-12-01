@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -21,71 +21,75 @@ interface RetroChartProps {
 
 type Period = "30d" | "1y" | "2y";
 
+interface ChartDataPoint {
+  date: string;
+  fullDate: string;
+  value: number;
+  classification: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload?: any[];
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload as ChartDataPoint;
+    const color = getIndexColor(data.value);
+
+    return (
+      <div className="retro-box p-3">
+        <p className="font-(family-name:--font-retro) text-[8px] text-gray-400">{data.fullDate}</p>
+        <p className="font-(family-name:--font-retro) text-xl" style={{ color }}>
+          {data.value}
+        </p>
+        <p className="font-(family-name:--font-retro) text-[8px]" style={{ color }}>
+          {data.classification}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export default function RetroChart({ data30d, data1y, data2y }: RetroChartProps) {
   const [period, setPeriod] = useState<Period>("30d");
 
-  const periodData = {
-    "30d": data30d,
-    "1y": data1y,
-    "2y": data2y,
-  };
+  const periodData = useMemo(
+    () => ({
+      "30d": data30d,
+      "1y": data1y,
+      "2y": data2y,
+    }),
+    [data30d, data1y, data2y]
+  );
 
   const data = periodData[period];
 
-  const chartData = [...data].reverse().map((item) => ({
-    date:
-      period === "30d"
-        ? item.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
-        : item.date.toLocaleDateString("en-US", { year: "2-digit", month: "short" }),
-    fullDate: item.date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }),
-    value: item.value,
-    classification: item.value_classification,
-  }));
-
-  const CustomTooltip = ({
-    active,
-    payload,
-  }: {
-    active?: boolean;
-    payload?: Array<{ payload: (typeof chartData)[0] }>;
-  }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const color = getIndexColor(data.value);
-
-      return (
-        <div className="retro-box p-3">
-          <p className="font-[family-name:var(--font-retro)] text-[8px] text-gray-400">
-            {data.fullDate}
-          </p>
-          <p
-            className="font-[family-name:var(--font-retro)] text-xl"
-            style={{ color }}
-          >
-            {data.value}
-          </p>
-          <p
-            className="font-[family-name:var(--font-retro)] text-[8px]"
-            style={{ color }}
-          >
-            {data.classification}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const chartData = useMemo(
+    () =>
+      [...data].reverse().map((item) => ({
+        date:
+          period === "30d"
+            ? item.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : item.date.toLocaleDateString("en-US", { year: "2-digit", month: "short" }),
+        fullDate: item.date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+        value: item.value,
+        classification: item.value_classification,
+      })),
+    [data, period]
+  );
 
   return (
     <div className="retro-box p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="font-[family-name:var(--font-retro)] text-[10px] text-[#00ffff]">
-          HISTORY
-        </h2>
+        <h2 className="font-(family-name:--font-retro) text-[10px] text-[#00ffff]">HISTORY</h2>
 
         <div className="flex gap-2">
           {[
@@ -96,7 +100,7 @@ export default function RetroChart({ data30d, data1y, data2y }: RetroChartProps)
             <button
               key={key}
               onClick={() => setPeriod(key as Period)}
-              className={`font-[family-name:var(--font-retro)] text-[10px] px-3 py-1 border-2 transition-all ${
+              className={`font-(family-name:--font-retro) text-[10px] px-3 py-1 border-2 transition-all ${
                 period === key
                   ? "border-[#00ff00] bg-[#00ff00] text-black shadow-[0_0_10px_#00ff00]"
                   : "border-gray-600 text-gray-400 hover:border-[#00ff00] hover:text-[#00ff00]"
@@ -169,7 +173,7 @@ export default function RetroChart({ data30d, data1y, data2y }: RetroChartProps)
               className="w-3 h-3"
               style={{ backgroundColor: color, boxShadow: `0 0 5px ${color}` }}
             />
-            <span className="font-[family-name:var(--font-retro)] text-[8px] text-gray-500">
+            <span className="font-(family-name:--font-retro) text-[8px] text-gray-500">
               {label} ({value})
             </span>
           </div>

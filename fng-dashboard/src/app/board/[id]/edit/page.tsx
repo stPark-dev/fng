@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -29,22 +29,7 @@ export default function EditPostPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadPost();
-  }, [postId]);
-
-  useEffect(() => {
-    // 로그인 체크 및 작성자 체크
-    if (!authLoading && !loading) {
-      if (!user) {
-        router.push("/login");
-      } else if (post && user.id !== post.user_id) {
-        router.push(`/board/${postId}`);
-      }
-    }
-  }, [user, authLoading, post, loading, router, postId]);
-
-  const loadPost = async () => {
+  const loadPost = useCallback(async () => {
     setLoading(true);
     try {
       const postData = await getPost(postId);
@@ -64,19 +49,38 @@ export default function EditPostPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId, router]);
+
+  useEffect(() => {
+    loadPost();
+  }, [loadPost]);
+
+  useEffect(() => {
+    // 로그인 체크 및 작성자 체크
+    if (!authLoading && !loading) {
+      if (!user) {
+        router.push("/login");
+      } else if (post && user.id !== post.user_id) {
+        router.push(`/board/${postId}`);
+      }
+    }
+  }, [user, authLoading, post, loading, router, postId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setError(locale === "ko" ? "이미지 파일만 업로드 가능합니다." : "Only image files are allowed.");
+      setError(
+        locale === "ko" ? "이미지 파일만 업로드 가능합니다." : "Only image files are allowed."
+      );
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setError(locale === "ko" ? "파일 크기는 10MB 이하여야 합니다." : "File size must be under 10MB.");
+      setError(
+        locale === "ko" ? "파일 크기는 10MB 이하여야 합니다." : "File size must be under 10MB."
+      );
       return;
     }
 
@@ -129,7 +133,13 @@ export default function EditPostPage() {
 
       router.push(`/board/${postId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : locale === "ko" ? "오류가 발생했습니다." : "An error occurred.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : locale === "ko"
+          ? "오류가 발생했습니다."
+          : "An error occurred."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -146,11 +156,13 @@ export default function EditPostPage() {
   return (
     <div className="min-h-screen bg-[#0d0a08] relative vignette grain">
       {/* 헤더 */}
-      <header className="border-b-2 border-[#3d2d1f] bg-gradient-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50">
+      <header className="border-b-2 border-[#3d2d1f] bg-linear-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/board">
-              <h1 className={`${fontClass} text-xl text-[#e0d0b8] hover:text-[#c03030] transition-colors cursor-pointer`}>
+              <h1
+                className={`${fontClass} text-xl text-[#e0d0b8] hover:text-[#c03030] transition-colors cursor-pointer`}
+              >
                 {locale === "ko" ? "공포와 탐욕의 전당" : "Hall of Fear & Greed"}
               </h1>
             </Link>
@@ -299,17 +311,12 @@ export default function EditPostPage() {
             </div>
 
             {/* 에러 메시지 */}
-            {error && (
-              <p className={`${fontClass} text-sm text-[#ff4444]`}>{error}</p>
-            )}
+            {error && <p className={`${fontClass} text-sm text-[#ff4444]`}>{error}</p>}
 
             {/* 버튼 */}
             <div className="flex gap-4">
               <Link href={`/board/${postId}`} className="flex-1">
-                <button
-                  type="button"
-                  className={`${fontClass} dark-btn w-full text-sm px-4 py-2`}
-                >
+                <button type="button" className={`${fontClass} dark-btn w-full text-sm px-4 py-2`}>
                   {locale === "ko" ? "취소" : "Cancel"}
                 </button>
               </Link>
@@ -319,8 +326,12 @@ export default function EditPostPage() {
                 className={`${fontClass} blood-btn flex-1 text-sm px-4 py-2 disabled:opacity-50`}
               >
                 {submitting
-                  ? locale === "ko" ? "저장 중..." : "Saving..."
-                  : locale === "ko" ? "저장" : "Save"}
+                  ? locale === "ko"
+                    ? "저장 중..."
+                    : "Saving..."
+                  : locale === "ko"
+                  ? "저장"
+                  : "Save"}
               </button>
             </div>
           </form>

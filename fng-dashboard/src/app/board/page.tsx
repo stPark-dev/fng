@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n-context";
@@ -11,9 +10,8 @@ import LanguageSwitch from "@/components/LanguageSwitch";
 import AuthButton from "@/components/AuthButton";
 
 export default function BoardPage() {
-  const { t, locale, fontClass } = useI18n();
+  const { locale, fontClass } = useI18n();
   const { user } = useAuth();
-  const router = useRouter();
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [total, setTotal] = useState(0);
@@ -24,11 +22,7 @@ export default function BoardPage() {
   const limit = 10;
   const totalPages = Math.ceil(total / limit);
 
-  useEffect(() => {
-    loadPosts();
-  }, [page, category]);
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setLoading(true);
     try {
       const result = await getPosts(category, page, limit);
@@ -39,7 +33,11 @@ export default function BoardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [category, page, limit]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -58,18 +56,24 @@ export default function BoardPage() {
 
   const getCategoryLabel = (cat: "fear" | "greed") => {
     return cat === "fear"
-      ? locale === "ko" ? "공포" : "Fear"
-      : locale === "ko" ? "탐욕" : "Greed";
+      ? locale === "ko"
+        ? "공포"
+        : "Fear"
+      : locale === "ko"
+      ? "탐욕"
+      : "Greed";
   };
 
   return (
     <div className="min-h-screen bg-[#0d0a08] relative vignette grain">
       {/* 헤더 */}
-      <header className="border-b-2 border-[#3d2d1f] bg-gradient-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50">
+      <header className="border-b-2 border-[#3d2d1f] bg-linear-to-b from-[#1a1512] to-[#0d0a08] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/dashboard">
-              <h1 className={`${fontClass} text-xl text-[#e0d0b8] hover:text-[#c03030] transition-colors cursor-pointer`}>
+              <h1
+                className={`${fontClass} text-xl text-[#e0d0b8] hover:text-[#c03030] transition-colors cursor-pointer`}
+              >
                 {locale === "ko" ? "공포와 탐욕의 전당" : "Hall of Fear & Greed"}
               </h1>
             </Link>
@@ -88,7 +92,10 @@ export default function BoardPage() {
           {/* 카테고리 필터 */}
           <div className="flex gap-2">
             <button
-              onClick={() => { setCategory(undefined); setPage(1); }}
+              onClick={() => {
+                setCategory(undefined);
+                setPage(1);
+              }}
               className={`${fontClass} text-sm px-4 py-2 border-2 transition-all ${
                 category === undefined
                   ? "border-[#c03030] bg-[#c03030] text-[#fff0f0]"
@@ -98,7 +105,10 @@ export default function BoardPage() {
               {locale === "ko" ? "전체" : "All"}
             </button>
             <button
-              onClick={() => { setCategory("fear"); setPage(1); }}
+              onClick={() => {
+                setCategory("fear");
+                setPage(1);
+              }}
               className={`${fontClass} text-sm px-4 py-2 border-2 transition-all ${
                 category === "fear"
                   ? "border-[#ff4444] bg-[#ff4444] text-white"
@@ -108,7 +118,10 @@ export default function BoardPage() {
               {locale === "ko" ? "공포" : "Fear"}
             </button>
             <button
-              onClick={() => { setCategory("greed"); setPage(1); }}
+              onClick={() => {
+                setCategory("greed");
+                setPage(1);
+              }}
               className={`${fontClass} text-sm px-4 py-2 border-2 transition-all ${
                 category === "greed"
                   ? "border-[#aa44ff] bg-[#aa44ff] text-white"
@@ -149,7 +162,7 @@ export default function BoardPage() {
                     <div className="flex items-start gap-4">
                       {/* 썸네일 */}
                       {post.image_url && (
-                        <div className="flex-shrink-0 w-20 h-20 relative rounded overflow-hidden border border-[#3d2d1f]">
+                        <div className="shrink-0 w-20 h-20 relative rounded overflow-hidden border border-[#3d2d1f]">
                           <Image
                             src={post.image_url}
                             alt={post.title}
@@ -162,7 +175,11 @@ export default function BoardPage() {
                       {/* 내용 */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`${fontClass} text-xs px-2 py-0.5 border ${getCategoryStyle(post.category)}`}>
+                          <span
+                            className={`${fontClass} text-xs px-2 py-0.5 border ${getCategoryStyle(
+                              post.category
+                            )}`}
+                          >
                             {getCategoryLabel(post.category)}
                           </span>
                           <h3 className={`${fontClass} text-base text-[#e0d0b8] truncate`}>
@@ -218,7 +235,7 @@ export default function BoardPage() {
               ←
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(p => Math.abs(p - page) <= 2)
+              .filter((p) => Math.abs(p - page) <= 2)
               .map((p) => (
                 <button
                   key={p}
@@ -245,7 +262,9 @@ export default function BoardPage() {
         {/* 대시보드로 돌아가기 */}
         <div className="text-center mt-8">
           <Link href="/dashboard">
-            <span className={`${fontClass} text-sm text-[#907050] hover:text-[#c03030] transition-colors`}>
+            <span
+              className={`${fontClass} text-sm text-[#907050] hover:text-[#c03030] transition-colors`}
+            >
               ← {locale === "ko" ? "대시보드로 돌아가기" : "Back to Dashboard"}
             </span>
           </Link>
