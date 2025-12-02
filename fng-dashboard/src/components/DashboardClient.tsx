@@ -76,6 +76,14 @@ export default function DashboardClient({
                   {locale === "ko" ? "게시판" : "Board"}
                 </span>
               </Link>
+              {/* 롱/숏 게임 링크 */}
+              <Link href="/game">
+                <span
+                  className={`${fontClass} text-sm text-[#a08060] hover:text-[#c03030] transition-colors`}
+                >
+                  {locale === "ko" ? "롱/숏 게임" : "Long/Short"}
+                </span>
+              </Link>
               <LanguageSwitch />
               <div className="text-right hidden sm:block">
                 <p className={`${fontClass} text-xs text-[#907050]`}>{t.header.lastOffering}</p>
