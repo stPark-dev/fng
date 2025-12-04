@@ -491,7 +491,7 @@ export default function GamePage() {
         {phase === "setup" && (
           <div className="mt-8 text-center text-sm text-[#604030] space-y-2">
             <p>💡 과거 BTC 가격 데이터를 랜덤하게 선택하여 보여줍니다.</p>
-            <p>📈 90개의 캔들을 보고 다음 5개 캔들의 방향을 예측하세요.</p>
+            <p>📈 150개의 캔들을 보고 다음 5개 캔들의 방향을 예측하세요.</p>
             <p>🎮 실제 투자가 아닌 연습용 게임입니다.</p>
           </div>
         )}

@@ -56,6 +56,12 @@ export const translations = {
       aWarningText:
         "이것은 투자 조언이 아니다. 이 던전에서, 당신의 선택의 무게는 오직 당신만이 짊어진다.",
     },
+    // AI Insight
+    aiInsight: {
+      title: "AI 시장 분석",
+      btc: "비트코인",
+      eth: "이더리움",
+    },
     // Footer
     footer: {},
     // Investment quotes (from famous investors)
@@ -149,6 +155,12 @@ export const translations = {
       aWarningText:
         "This is not financial advice. In this dungeon, you alone bear the weight of your choices.",
     },
+    // AI Insight
+    aiInsight: {
+      title: "AI MARKET INSIGHT",
+      btc: "BITCOIN",
+      eth: "ETHEREUM",
+    },
     // Footer
     footer: {},
     // Investment quotes (from famous investors)
@@ -202,7 +214,7 @@ export const translations = {
       },
     ],
   },
-} as const;
+};
 
 export type Translations = typeof translations.ko;
 

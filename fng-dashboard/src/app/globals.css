@@ -87,11 +87,10 @@ html {
 
 /* 다크 판타지 스타일 */
 .dark-box {
-  background: linear-gradient(180deg, rgba(35, 28, 22, 0.95) 0%, rgba(20, 15, 12, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(35, 28, 22, 0.75) 0%, rgba(20, 15, 12, 0.75) 100%);
   border: 2px solid #4a3828;
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6), 0 4px 20px rgba(0, 0, 0, 0.7);
   position: relative;
-  backdrop-filter: blur(8px);
 }
 
 .dark-box::before {

@@ -1,5 +1,5 @@
 {
-  "name": "Fear & Greed Index Alert",
+  "name": "Fear & Greed Index Alert (Phase 1 - Sequential)",
   "nodes": [
     {
       "parameters": {
@@ -16,8 +16,11 @@
       "name": "Daily 9AM KST",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [0, 0],
-      "notes": "매일 오전 9시(KST) 실행. n8n 서버 timezone이 Asia/Seoul인지 확인 필요."
+      "position": [
+        0,
+        0
+      ],
+      "notes": "\ub9e4\uc77c \uc624\uc804 9\uc2dc(KST) \uc2e4\ud589"
     },
     {
       "parameters": {
@@ -35,64 +38,134 @@
           ]
         }
       },
-      "id": "http-request",
+      "id": "fetch-fng",
       "name": "Fetch FNG API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [220, 0],
+      "position": [
+        220,
+        0
+      ],
       "retryOnFail": true,
       "maxTries": 3,
-      "waitBetweenTries": 5000,
-      "notes": "Alternative.me API 호출. limit=2로 오늘+어제 데이터 수신."
+      "notes": "Alternative.me API \ud638\ucd9c"
     },
     {
       "parameters": {
-        "jsCode": "/**\n * Fear & Greed Index - Transform & Alert Logic\n * 모든 구간에서 알림 메시지 생성\n */\n\nconst EMOJI_MAP = {\n  'Extreme Fear': '😱',\n  'Fear': '😨',\n  'Neutral': '😐',\n  'Greed': '🤑',\n  'Extreme Greed': '🚀',\n};\n\nconst unixToISO = (ts) => new Date(parseInt(ts, 10) * 1000).toISOString();\nconst safeParseInt = (val) => parseInt(val, 10) || 0;\nconst getEmoji = (cls) => EMOJI_MAP[cls] || '📊';\nconst getChangeEmoji = (c) => c > 0 ? '📈' : c < 0 ? '📉' : '➡️';\n\n// 구간별 메시지 정의\nconst getZoneMessage = (value) => {\n  if (value <= 10) {\n    return {\n      zone: '🔥 [공포 지옥] 0-10',\n      title: '패닉셀 절정! 올인 타이밍?!',\n      tip: '역사적 바닥권. 워렌 버핏: \"남들이 공포에 떨 때 탐욕을 부려라\"\\n⚔️ 전군 돌격! 분할매수 적극 고려!',\n      emoji: '🩸'\n    };\n  } else if (value <= 20) {\n    return {\n      zone: '😱 [극단적 공포] 11-20',\n      title: '공포 극대화! 매수 기회 포착!',\n      tip: '시장이 과도하게 비관적. 대부분의 악재가 가격에 반영됨\\n💰 용기있는 자가 부를 얻는다! 분할매수 시작!',\n      emoji: '🎯'\n    };\n  } else if (value <= 30) {\n    return {\n      zone: '😨 [공포] 21-30',\n      title: '공포 우세! 매수 관심 구간',\n      tip: '아직 두려움이 지배. 좋은 자산을 싸게 살 기회\\n🛒 관심 종목 리스트 점검, 분할매수 준비!',\n      emoji: '👀'\n    };\n  } else if (value <= 40) {\n    return {\n      zone: '😰 [약한 공포] 31-40',\n      title: '불안한 시장, 기회 엿보기',\n      tip: '시장 심리 위축. 섣부른 매도보다 관망 or 소량 매수\\n📝 포트폴리오 점검하고 저가 매수 기회 탐색!',\n      emoji: '🔍'\n    };\n  } else if (value <= 60) {\n    return {\n      zone: '😐 [중립] 41-60',\n      title: '균형 상태, 관망 추천',\n      tip: '뚜렷한 방향성 없음. 추세 전환 신호 주시\\n⚖️ 급하게 움직이지 말고 시장 흐름 관찰!',\n      emoji: '⏳'\n    };\n  } else if (value <= 70) {\n    return {\n      zone: '🙂 [약한 탐욕] 61-70',\n      title: '낙관론 확산, 주의 시작',\n      tip: '시장이 긍정적. 신규 매수보다 보유 전략 유지\\n📊 추가 매수는 신중하게, 익절 라인 설정!',\n      emoji: '📈'\n    };\n  } else if (value <= 80) {\n    return {\n      zone: '🤑 [탐욕] 71-80',\n      title: '과열 신호! 차익실현 고려',\n      tip: 'FOMO 주의! 지금 들어가면 물릴 수 있음\\n💵 수익 중인 포지션 일부 정리 고려!',\n      emoji: '⚠️'\n    };\n  } else if (value <= 90) {\n    return {\n      zone: '🚀 [극단적 탐욕] 81-90',\n      title: '버블 경고! 익절 타이밍!',\n      tip: '시장 과열 심각. 역사적으로 조정 임박 구간\\n🛡️ 수익 확보! 현금 비중 확대!',\n      emoji: '🔔'\n    };\n  } else {\n    return {\n      zone: '💥 [탐욕 극한] 91-100',\n      title: '유포리아! 탈출 준비!',\n      tip: '극도의 낙관. 이런 때 사면 고점에 물린다\\n🚨 매도 신호! 욕심 버리고 수익 실현!',\n      emoji: '🏃'\n    };\n  }\n};\n\ntry {\n  const apiResponse = $input.all()[0].json;\n  const fngData = apiResponse?.data;\n\n  if (!Array.isArray(fngData) || fngData.length < 2) {\n    throw new Error('Invalid API response');\n  }\n\n  const todayRaw = fngData[0];\n  const yesterdayRaw = fngData[1];\n\n  const todayVal = safeParseInt(todayRaw.value);\n  const yesterdayVal = safeParseInt(yesterdayRaw.value);\n  const todayClassification = todayRaw.value_classification || 'Unknown';\n\n  const change = todayVal - yesterdayVal;\n  const changeEmoji = getChangeEmoji(change);\n  const changeSign = change >= 0 ? '+' : '';\n  const emoji = getEmoji(todayClassification);\n\n  const zoneInfo = getZoneMessage(todayVal);\n\n  const alertMessage = [\n    `${zoneInfo.emoji} *${zoneInfo.zone}*`,\n    `*${zoneInfo.title}*`,\n    '',\n    `${emoji} *Fear & Greed Index*`,\n    '━━━━━━━━━━━━━━━',\n    `📊 현재 지수: *${todayVal}* (${todayClassification})`,\n    `${changeEmoji} 전일 대비: *${changeSign}${change}*`,\n    `📅 어제 지수: ${yesterdayVal}`,\n    '',\n    `💡 *투자 팁*`,\n    zoneInfo.tip\n  ].join('\\n');\n\n  return [{\n    json: {\n      value: todayVal,\n      value_classification: todayClassification,\n      timestamp: unixToISO(todayRaw.timestamp),\n      should_alert: true,\n      alert_message: alertMessage,\n      change: change,\n    }\n  }];\n\n} catch (error) {\n  return [{\n    json: {\n      _error: true,\n      _error_message: error.message,\n      should_alert: false,\n    }\n  }];\n}"
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd",
+        "options": {}
+      },
+      "id": "fetch-prices",
+      "name": "Fetch Crypto Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "notes": "CoinGecko API: BTC, ETH \uac00\uaca9 \uc870\ud68c"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "REPLACE_WITH_GEMINI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "={{ [{\n  \"parts\": [{\n    \"text\": \"\ud604\uc7ac \uc554\ud638\ud654\ud3d0 \uc2dc\uc7a5 \uc0c1\ud669\uc5d0 \ub300\ud55c \uc9e7\uc740 \uc778\uc0ac\uc774\ud2b8\ub97c \ud55c\uad6d\uc5b4\ub85c \uc791\uc131\ud574\uc918. \\n\\n\ub370\uc774\ud130:\\n- \uacf5\ud3ec/\ud0d0\uc695 \uc9c0\uc218: \" + $('Fetch FNG API').first().json.data[0].value + \" (\" + $('Fetch FNG API').first().json.data[0].value_classification + \")\\n- \ube44\ud2b8\ucf54\uc778 \uac00\uaca9: $\" + $('Fetch Crypto Prices').first().json.bitcoin.usd + \"\\n- \uc774\ub354\ub9ac\uc6c0 \uac00\uaca9: $\" + $('Fetch Crypto Prices').first().json.ethereum.usd + \"\\n\\n\uc870\uac74:\\n- 3\ubb38\uc7a5 \uc774\ub0b4\ub85c \uc694\uc57d.\\n- \ud22c\uc790 \uc870\uc5b8\ucc98\ub7fc \ub4e4\ub9ac\uac8c \uc791\uc131.\\n- \uc774\ubaa8\uc9c0 1~2\uac1c \uc0ac\uc6a9.\"\n  }]\n}] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-ai",
+      "name": "Fetch Gemini Insight",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "notes": "Google Gemini Pro API \ud638\ucd9c"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Fear & Greed Index - Transform & Alert Logic\n * Phase 1: Price & AI Insight Added\n * Modified to use detailed Zone Logic per user request\n */\n\nconst EMOJI_MAP = {\n  'Extreme Fear': '\ud83d\ude31',\n  'Fear': '\ud83d\ude28',\n  'Neutral': '\ud83d\ude10',\n  'Greed': '\ud83e\udd11',\n  'Extreme Greed': '\ud83d\ude80',\n};\n\nconst unixToISO = (ts) => new Date(parseInt(ts, 10) * 1000).toISOString();\nconst safeParseInt = (val) => parseInt(val, 10) || 0;\nconst getEmoji = (cls) => EMOJI_MAP[cls] || '\ud83d\udcca';\nconst getChangeEmoji = (c) => c > 0 ? '\ud83d\udcc8' : c < 0 ? '\ud83d\udcc9' : '\u27a1\ufe0f';\n\nconst getZoneMessage = (value) => {\n  if (value <= 10) {\n    return {\n      zone: '\ud83d\udd25 [\uacf5\ud3ec \uc9c0\uc625] 0-10',\n      title: '\ud328\ub2c9\uc140 \uc808\uc815! \uc62c\uc778 \ud0c0\uc774\ubc0d?!',\n      tip: '\uc5ed\uc0ac\uc801 \ubc14\ub2e5\uad8c. \uc6cc\ub80c \ubc84\ud54f: \"\ub0a8\ub4e4\uc774 \uacf5\ud3ec\uc5d0 \ub5a8 \ub54c \ud0d0\uc695\uc744 \ubd80\ub824\ub77c\"\\n\u2694\ufe0f \uc804\uad70 \ub3cc\uaca9! \ubd84\ud560\ub9e4\uc218 \uc801\uadf9 \uace0\ub824!',\n      emoji: '\ud83e\ude78'\n    };\n  } else if (value <= 20) {\n    return {\n      zone: '\ud83d\ude31 [\uadf9\ub2e8\uc801 \uacf5\ud3ec] 11-20',\n      title: '\uacf5\ud3ec \uadf9\ub300\ud654! \ub9e4\uc218 \uae30\ud68c \ud3ec\ucc29!',\n      tip: '\uc2dc\uc7a5\uc774 \uacfc\ub3c4\ud558\uac8c \ube44\uad00\uc801. \ub300\ubd80\ubd84\uc758 \uc545\uc7ac\uac00 \uac00\uaca9\uc5d0 \ubc18\uc601\ub428\\n\ud83d\udcb0 \uc6a9\uae30\uc788\ub294 \uc790\uac00 \ubd80\ub97c \uc5bb\ub294\ub2e4! \ubd84\ud560\ub9e4\uc218 \uc2dc\uc791!',\n      emoji: '\ud83c\udfaf'\n    };\n  } else if (value <= 30) {\n    return {\n      zone: '\ud83d\ude28 [\uacf5\ud3ec] 21-30',\n      title: '\uacf5\ud3ec \uc6b0\uc138! \ub9e4\uc218 \uad00\uc2ec \uad6c\uac04',\n      tip: '\uc544\uc9c1 \ub450\ub824\uc6c0\uc774 \uc9c0\ubc30. \uc88b\uc740 \uc790\uc0b0\uc744 \uc2f8\uac8c \uc0b4 \uae30\ud68c\\n\ud83d\uded2 \uad00\uc2ec \uc885\ubaa9 \ub9ac\uc2a4\ud2b8 \uc810\uac80, \ubd84\ud560\ub9e4\uc218 \uc900\ube44!',\n      emoji: '\ud83d\udc40'\n    };\n  } else if (value <= 40) {\n    return {\n      zone: '\ud83d\ude30 [\uc57d\ud55c \uacf5\ud3ec] 31-40',\n      title: '\ubd88\uc548\ud55c \uc2dc\uc7a5, \uae30\ud68c \uc5ff\ubcf4\uae30',\n      tip: '\uc2dc\uc7a5 \uc2ec\ub9ac \uc704\ucd95. \uc123\ubd80\ub978 \ub9e4\ub3c4\ubcf4\ub2e4 \uad00\ub9dd or \uc18c\ub7c9 \ub9e4\uc218\\n\ud83d\udcdd \ud3ec\ud2b8\ud3f4\ub9ac\uc624 \uc810\uac80\ud558\uace0 \uc800\uac00 \ub9e4\uc218 \uae30\ud68c \ud0d0\uc0c9!',\n      emoji: '\ud83d\udd0d'\n    };\n  } else if (value <= 60) {\n    return {\n      zone: '\ud83d\ude10 [\uc911\ub9bd] 41-60',\n      title: '\uade0\ud615 \uc0c1\ud0dc, \uad00\ub9dd \ucd94\ucc9c',\n      tip: '\ub69c\ub837\ud55c \ubc29\ud5a5\uc131 \uc5c6\uc74c. \ucd94\uc138 \uc804\ud658 \uc2e0\ud638 \uc8fc\uc2dc\\n\u2696\ufe0f \uae09\ud558\uac8c \uc6c0\uc9c1\uc774\uc9c0 \ub9d0\uace0 \uc2dc\uc7a5 \ud750\ub984 \uad00\ucc30!',\n      emoji: '\u23f3'\n    };\n  } else if (value <= 70) {\n    return {\n      zone: '\ud83d\ude42 [\uc57d\ud55c \ud0d0\uc695] 61-70',\n      title: '\ub099\uad00\ub860 \ud655\uc0b0, \uc8fc\uc758 \uc2dc\uc791',\n      tip: '\uc2dc\uc7a5\uc774 \uae0d\uc815\uc801. \uc2e0\uaddc \ub9e4\uc218\ubcf4\ub2e4 \ubcf4\uc720 \uc804\ub7b5 \uc720\uc9c0\\n\ud83d\udcca \ucd94\uac00 \ub9e4\uc218\ub294 \uc2e0\uc911\ud558\uac8c, \uc775\uc808 \ub77c\uc778 \uc124\uc815!',\n      emoji: '\ud83d\udcc8'\n    };\n  } else if (value <= 80) {\n    return {\n      zone: '\ud83e\udd11 [\ud0d0\uc695] 71-80',\n      title: '\uacfc\uc5f4 \uc2e0\ud638! \ucc28\uc775\uc2e4\ud604 \uace0\ub824',\n      tip: 'FOMO \uc8fc\uc758! \uc9c0\uae08 \ub4e4\uc5b4\uac00\uba74 \ubb3c\ub9b4 \uc218 \uc788\uc74c\\n\ud83d\udcb5 \uc218\uc775 \uc911\uc778 \ud3ec\uc9c0\uc158 \uc77c\ubd80 \uc815\ub9ac \uace0\ub824!',\n      emoji: '\u26a0\ufe0f'\n    };\n  } else if (value <= 90) {\n    return {\n      zone: '\ud83d\ude80 [\uadf9\ub2e8\uc801 \ud0d0\uc695] 81-90',\n      title: '\ubc84\ube14 \uacbd\uace0! \uc775\uc808 \ud0c0\uc774\ubc0d!',\n      tip: '\uc2dc\uc7a5 \uacfc\uc5f4 \uc2ec\uac01. \uc5ed\uc0ac\uc801\uc73c\ub85c \uc870\uc815 \uc784\ubc15 \uad6c\uac04\\n\ud83d\udee1\ufe0f \uc218\uc775 \ud655\ubcf4! \ud604\uae08 \ube44\uc911 \ud655\ub300!',\n      emoji: '\ud83d\udd14'\n    };\n  } else {\n    return {\n      zone: '\ud83d\udca5 [\ud0d0\uc695 \uadf9\ud55c] 91-100',\n      title: '\uc720\ud3ec\ub9ac\uc544! \ud0c8\ucd9c \uc900\ube44!',\n      tip: '\uadf9\ub3c4\uc758 \ub099\uad00. \uc774\ub7f0 \ub54c \uc0ac\uba74 \uace0\uc810\uc5d0 \ubb3c\ub9b0\ub2e4\\n\ud83d\udea8 \ub9e4\ub3c4 \uc2e0\ud638! \uc695\uc2ec \ubc84\ub9ac\uace0 \uc218\uc775 \uc2e4\ud604!',\n      emoji: '\ud83c\udfc3'\n    };\n  }\n};\n\ntry {\n  const fngNode = $('Fetch FNG API').first();\n  const fngData = fngNode ? fngNode.json.data : null;\n  const priceNode = $('Fetch Crypto Prices').first();\n  const prices = priceNode ? priceNode.json : null;\n  \n  // Gemini Response Parsing\n  // Structure: candidates[0].content.parts[0].text\n  const geminiData = $input.item.json;\n  const aiComment = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || null;\n\n  if (!Array.isArray(fngData) || fngData.length < 2) {\n    throw new Error('Invalid FNG API response');\n  }\n\n  const todayRaw = fngData[0];\n  const yesterdayRaw = fngData[1];\n  const todayVal = safeParseInt(todayRaw.value);\n  const yesterdayVal = safeParseInt(yesterdayRaw.value);\n  const todayClassification = todayRaw.value_classification || 'Unknown';\n\n  const change = todayVal - yesterdayVal;\n  const changeEmoji = getChangeEmoji(change);\n  const changeSign = change >= 0 ? '+' : '';\n  const emoji = getEmoji(todayClassification);\n  const zoneInfo = getZoneMessage(todayVal);\n\n  const priceSection = (prices?.bitcoin?.usd && prices?.ethereum?.usd) \n      ? `\\n\ud83d\udcb0 *BTC*: $${prices.bitcoin.usd.toLocaleString()} | *ETH*: $${prices.ethereum.usd.toLocaleString()}` \n      : '';\n  const aiSection = aiComment ? `\\n\ud83e\udd16 *AI Insight*:\\n_${aiComment}_` : '';\n\n  const alertMessage = [\n      `${zoneInfo.emoji} *${zoneInfo.zone}*`,\n      `*${zoneInfo.title}*`,\n      '',\n      `${emoji} *Fear & Greed Index*`,\n      '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501',\n      `\ud83d\udcca \ud604\uc7ac \uc9c0\uc218: *${todayVal}* (${todayClassification})`,\n      `${changeEmoji} \uc804\uc77c \ub300\ube44: *${changeSign}${change}*`,\n      `\ud83d\udcc5 \uc5b4\uc81c \uc9c0\uc218: ${yesterdayVal}`,\n      priceSection,\n      '',\n      `\ud83d\udca1 *\ud22c\uc790 \ud301*`,\n      zoneInfo.tip,\n      aiSection\n    ].filter(Boolean).join('\\n');\n\n  return [{\n    json: {\n      value: todayVal,\n      value_classification: todayClassification,\n      timestamp: unixToISO(todayRaw.timestamp),\n      btc_price: prices?.bitcoin?.usd,\n      eth_price: prices?.ethereum?.usd,\n      ai_comment: aiComment,\n      should_alert: true,\n      alert_message: alertMessage,\n      change: change,\n    }\n  }];\n\n} catch (error) {\n  return [{\n    json: {\n      _error: true,\n      _error_message: error.message,\n      should_alert: false\n    }\n  }];\n}"
       },
       "id": "code-transform",
       "name": "Transform & Check Alert",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [440, 0],
-      "notes": "API 응답 파싱, 변동폭 계산, 알림 조건 판단"
+      "position": [
+        880,
+        0
+      ],
+      "notes": "\ub370\uc774\ud130 \ubcd1\ud569 \ubc0f \uc54c\ub9bc \ub85c\uc9c1"
     },
     {
       "parameters": {
-        "operation": "insert",
+        "operation": "create",
         "tableId": "fng_logs",
         "fieldsToSend": "defineBelow",
         "fieldList": {
           "fieldValues": [
             {
               "fieldName": "value",
-              "fieldValue": "={{ $json.value }}"
+              "fieldValue": "={{ $json.db_record.value }}"
             },
             {
               "fieldName": "value_classification",
-              "fieldValue": "={{ $json.value_classification }}"
+              "fieldValue": "={{ $json.db_record.value_classification }}"
             },
             {
               "fieldName": "timestamp",
-              "fieldValue": "={{ $json.timestamp }}"
+              "fieldValue": "={{ $json.db_record.timestamp }}"
+            },
+            {
+              "fieldName": "btc_price",
+              "fieldValue": "={{ $json.db_record.btc_price }}"
+            },
+            {
+              "fieldName": "eth_price",
+              "fieldValue": "={{ $json.db_record.eth_price }}"
+            },
+            {
+              "fieldName": "ai_comment",
+              "fieldValue": "={{ $json.db_record.ai_comment }}"
             }
           ]
         },
         "options": {
-          "onConflict": "ignore"
+          "onConflict": "timestamp"
         }
       },
       "id": "supabase-insert",
       "name": "Save to Supabase",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [660, 0],
+      "position": [
+        1100,
+        0
+      ],
       "credentials": {
         "supabaseApi": {
           "id": "REPLACE_WITH_CREDENTIAL_ID",
           "name": "Supabase API"
         }
-      },
-      "notes": "fng_logs 테이블에 INSERT. 중복 시 무시(idempotency)."
+      }
     },
     {
       "parameters": {
@@ -109,8 +182,10 @@
       "name": "Should Alert?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [880, 0],
-      "notes": "알림 조건 충족 시에만 Telegram으로 분기"
+      "position": [
+        1320,
+        0
+      ]
     },
     {
       "parameters": {
@@ -124,14 +199,16 @@
       "name": "Send Telegram Alert",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [1100, -100],
+      "position": [
+        1540,
+        -100
+      ],
       "credentials": {
         "telegramApi": {
           "id": "REPLACE_WITH_CREDENTIAL_ID",
           "name": "Telegram Bot"
         }
-      },
-      "notes": "Markdown 형식으로 알림 발송"
+      }
     },
     {
       "parameters": {},
@@ -139,8 +216,10 @@
       "name": "No Alert Needed",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [1100, 100],
-      "notes": "알림 조건 미충족 시 종료"
+      "position": [
+        1540,
+        100
+      ]
     }
   ],
   "connections": {
@@ -159,7 +238,18 @@
       "main": [
         [
           {
-            "node": "Transform & Check Alert",
+            "node": "Fetch Crypto Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Crypto Prices": {
+      "main": [
+        [
+          {
+            "node": "Fetch Gemini Insight",
             "type": "main",
             "index": 0
           }
@@ -205,20 +295,21 @@
           }
         ]
       ]
+    },
+    "Fetch Gemini Insight": {
+      "main": [
+        [
+          {
+            "node": "Transform & Check Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
     "timezone": "Asia/Seoul"
-  },
-  "tags": [
-    {
-      "name": "crypto",
-      "id": "1"
-    },
-    {
-      "name": "etl",
-      "id": "2"
-    }
-  ]
+  }
 }

@@ -40,7 +40,9 @@ export default function LandingPage() {
         </div>
 
         {/* 하단 로그인/회원가입 */}
-        <div className="dark-box p-8 mb-12 w-full max-w-md blood-border">
+        <div
+          className="dark-box p-8 mb-12 w-full max-w-md blood-border"
+        >
           <div className="text-center mb-8">
             <div className="flex justify-center gap-2">
               <div className="w-2 h-2 bg-[#8b0000] flicker" style={{ animationDelay: "0s" }} />

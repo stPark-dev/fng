@@ -25,7 +25,12 @@ CREATE TABLE IF NOT EXISTS fng_logs (
 
     -- ETL 메타데이터
     ingested_at           TIMESTAMPTZ DEFAULT NOW(),  -- DB 적재 시점
-    batch_id              VARCHAR(50)                  -- n8n Execution ID (선택)
+    batch_id              VARCHAR(50),                 -- n8n Execution ID (선택)
+
+    -- Phase 1 Expansion: Price & AI Insight
+    btc_price             NUMERIC,                     -- Bitcoin Price (USD)
+    eth_price             NUMERIC,                     -- Ethereum Price (USD)
+    ai_comment            TEXT                         -- AI Market Summary
 );
 
 -- -----------------------------------------------------------------------------

@@ -6,6 +6,7 @@ import AuthButton from "@/components/AuthButton";
 import DarkGauge from "@/components/DarkGauge";
 import DarkChart from "@/components/DarkChart";
 import DarkStats from "@/components/DarkStats";
+import AiInsight from "@/components/AiInsight";
 import Link from "next/link";
 import Image from "next/image";
 import { FngDataPoint } from "@/lib/api";
@@ -110,6 +111,9 @@ export default function DashboardClient({
             <DarkStats yearHigh={yearHigh} yearLow={yearLow} />
           </div>
         </div>
+
+        {/* AI Insight */}
+        <AiInsight current={current} />
 
         {/* 차트 */}
         <DarkChart data30d={data30d} data1y={data1y} data2y={data2y} />

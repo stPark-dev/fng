@@ -95,9 +95,21 @@ try {
     throw new Error('No input data received from HTTP Request node');
   }
 
-  // Alternative.me API 응답 구조: { name, data: [...], metadata: {...} }
-  const apiResponse = inputItems[0].json;
-  const fngData = apiResponse?.data;
+  // Input Structure Expectation:
+  // Item 0: { json: { fng: {...}, prices: {...}, ai_summary: "..." } }
+  // OR separate items if merged differently. Assuming merged into one item for simplicity.
+  
+  // For this implementation, we assume the previous node (Merge) outputs:
+  // {
+  //    "fng": { "data": [...] },
+  //    "prices": { "bitcoin": { "usd": 12345 }, "ethereum": { "usd": 1234 } },
+  //    "ai_summary": "Market is volatile..."
+  // }
+  
+  const inputJson = inputItems[0].json;
+  const fngData = inputJson.fng?.data;
+  const prices = inputJson.prices;
+  const aiComment = inputJson.ai_summary || null;
 
   if (!Array.isArray(fngData) || fngData.length < 2) {
     throw new Error(`Invalid API response: expected at least 2 data points, got ${fngData?.length || 0}`);
@@ -114,6 +126,10 @@ try {
   const todayVal = safeParseInt(todayRaw.value);
   const yesterdayVal = safeParseInt(yesterdayRaw.value);
   const todayClassification = todayRaw.value_classification || 'Unknown';
+
+  // Price Data
+  const btcPrice = prices?.bitcoin?.usd || null;
+  const ethPrice = prices?.ethereum?.usd || null;
 
   // ---------------------------------------------------------------------------
   // Step 3: 변동폭 계산
@@ -168,6 +184,14 @@ try {
         '💡 시장 변동성 주시 필요',
       ].join('\n');
     }
+    
+    // AI Comment Section
+    const aiSection = aiComment ? `\n🤖 *AI Market Insight*:\n_${aiComment}_` : '';
+    
+    // Price Section
+    const priceSection = (btcPrice && ethPrice) 
+      ? `\n💰 *BTC*: $${btcPrice.toLocaleString()} | *ETH*: $${ethPrice.toLocaleString()}` 
+      : '';
 
     alertMessage = [
       alertType,
@@ -177,6 +201,8 @@ try {
       `📊 현재 지수: *${todayVal}* (${todayClassification})`,
       `${changeEmoji} 전일 대비: *${changeSign}${change}*`,
       `📅 어제 지수: ${yesterdayVal}`,
+      priceSection,
+      aiSection,
       actionMessage,
       '',
       `⏰ ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`,
@@ -193,6 +219,9 @@ try {
       value: todayVal,
       value_classification: todayClassification,
       timestamp: unixToISO(todayRaw.timestamp),
+      btc_price: btcPrice,
+      eth_price: ethPrice,
+      ai_comment: aiComment,
     },
 
     // 알림 판단 결과

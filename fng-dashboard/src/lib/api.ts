@@ -8,6 +8,9 @@ export interface FngDataPoint {
   value_classification: string;
   timestamp: string;
   date: Date;
+  btc_price?: number;
+  eth_price?: number;
+  ai_comment?: string;
 }
 
 export interface FngStats {
@@ -57,6 +60,9 @@ interface SupabaseRecord {
   value: number;
   value_classification: string;
   timestamp: string;
+  btc_price?: number;
+  eth_price?: number;
+  ai_comment?: string;
 }
 
 const transformRecord = (record: SupabaseRecord): FngDataPoint => ({
@@ -64,6 +70,9 @@ const transformRecord = (record: SupabaseRecord): FngDataPoint => ({
   value_classification: record.value_classification,
   timestamp: record.timestamp,
   date: new Date(record.timestamp),
+  btc_price: record.btc_price,
+  eth_price: record.eth_price,
+  ai_comment: record.ai_comment,
 });
 
 /**
@@ -72,8 +81,8 @@ const transformRecord = (record: SupabaseRecord): FngDataPoint => ({
 export async function fetchFngData(limit: number = 30): Promise<FngDataPoint[]> {
   const query =
     limit > 0
-      ? `select=value,value_classification,timestamp&order=timestamp.desc&limit=${limit}`
-      : `select=value,value_classification,timestamp&order=timestamp.desc`;
+      ? `select=value,value_classification,timestamp,btc_price,eth_price,ai_comment&order=timestamp.desc&limit=${limit}`
+      : `select=value,value_classification,timestamp,btc_price,eth_price,ai_comment&order=timestamp.desc`;
 
   const data = await supabaseQuery<SupabaseRecord[]>("fng_logs", query);
 
@@ -110,7 +119,7 @@ export async function fetchFngByPeriod(period: FngPeriod): Promise<FngDataPoint[
       break;
   }
 
-  let query = "select=value,value_classification,timestamp&order=timestamp.desc";
+  let query = "select=value,value_classification,timestamp,btc_price,eth_price,ai_comment&order=timestamp.desc";
 
   if (fromDate) {
     query += `&timestamp=gte.${fromDate.toISOString()}`;
