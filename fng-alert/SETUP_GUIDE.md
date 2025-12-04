@@ -59,7 +59,7 @@ Schedule (9AM) → HTTP Request → Code Node → Supabase → IF → Telegram
 1. 생성한 Bot에게 아무 메시지 전송
 2. 브라우저에서 접속:
    ```
-   https://api.telegram.org/bot7960580188:AAEB_aL3f_xrxMP_52dEJRdSyQ0YPAfOjbM/getUpdates
+   https://api.telegram.org/bot7960580188:xxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 3. 응답에서 `"chat":{"id":123456789}` 확인
    7960580188:AAEB_aL3f_xrxMP_52dEJRdSyQ0YPAfOjbM
