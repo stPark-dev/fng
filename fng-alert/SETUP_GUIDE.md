@@ -59,10 +59,10 @@ Schedule (9AM) → HTTP Request → Code Node → Supabase → IF → Telegram
 1. 생성한 Bot에게 아무 메시지 전송
 2. 브라우저에서 접속:
    ```
-   https://api.telegram.org/bot7960580188:xxxxxxxxxxxxxxxxxxxxxxxxxxx
+   https://api.telegram.org/xxxxxxxxxxxxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 3. 응답에서 `"chat":{"id":123456789}` 확인
-   7960580188:AAEB_aL3f_xrxMP_52dEJRdSyQ0YPAfOjbM
+   xxxxxxxxxxxxxxxxxxxxxxxxxxxx
    **방법 B: 채널/그룹**
 4. Bot을 채널/그룹에 관리자로 추가
 5. 채널에 아무 메시지 작성
