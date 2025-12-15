@@ -10,10 +10,7 @@
       "name": "Fetch Crypto Prices",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -2176,
-        -320
-      ],
+      "position": [-2176, -320],
       "notes": "CoinGecko API: BTC, ETH 가격 조회"
     },
     {
@@ -35,10 +32,7 @@
       "name": "Get Existing Dates",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [
-        -2400,
-        -80
-      ],
+      "position": [-2400, -80],
       "credentials": {
         "supabaseApi": {
           "id": "LgsTTjOAXDHsUcBL",
@@ -67,10 +61,7 @@
       "name": "Fetch FNG History",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -2176,
-        -80
-      ],
+      "position": [-2176, -80],
       "notes": "최근 7일 FNG 데이터 조회"
     },
     {
@@ -81,10 +72,7 @@
       "name": "Find Missing Dates",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -1952,
-        -80
-      ],
+      "position": [-1952, -80],
       "notes": "누락된 날짜 감지"
     },
     {
@@ -114,10 +102,7 @@
       "name": "Has Missing Data?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        -1728,
-        -80
-      ]
+      "position": [-1728, -80]
     },
     {
       "parameters": {
@@ -155,10 +140,7 @@
       "name": "Save Backfill Data",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [
-        -1520,
-        16
-      ],
+      "position": [-1520, 16],
       "credentials": {
         "supabaseApi": {
           "id": "LgsTTjOAXDHsUcBL",
@@ -173,10 +155,7 @@
       "name": "No Missing Data",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [
-        -1520,
-        -160
-      ]
+      "position": [-1520, -160]
     },
     {
       "parameters": {
@@ -187,7 +166,7 @@
           "parameters": [
             {
               "name": "key",
-              "value": "AIzaSyA8gdzDSl1iutltPpdGS6o26FOXFZo68V8"
+              "value": ""
             }
           ]
         },
@@ -206,10 +185,7 @@
       "name": "Fetch Gemini Insight",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -1952,
-        -320
-      ],
+      "position": [-1952, -320],
       "notes": "Google Gemini Pro API 호출"
     },
     {
@@ -227,10 +203,7 @@
       "name": "Daily 9AM KST1",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        -2608,
-        -320
-      ],
+      "position": [-2608, -320],
       "notes": "매일 오전 9시(KST) 실행"
     },
     {
@@ -253,10 +226,7 @@
       "name": "Fetch FNG API1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -2400,
-        -320
-      ],
+      "position": [-2400, -320],
       "retryOnFail": true,
       "maxTries": 3,
       "notes": "Alternative.me API 호출"
@@ -269,10 +239,7 @@
       "name": "Transform & Check Alert1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -1728,
-        -320
-      ],
+      "position": [-1728, -320],
       "notes": "데이터 병합 및 알림 로직"
     },
     {
@@ -291,10 +258,7 @@
       "name": "Should Alert?1",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        -848,
-        -320
-      ]
+      "position": [-848, -320]
     },
     {
       "parameters": {
@@ -308,10 +272,7 @@
       "name": "Send Telegram Alert1",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [
-        -576,
-        -400
-      ],
+      "position": [-576, -400],
       "webhookId": "b3f787cd-f341-43fb-911d-607fa176abd3",
       "credentials": {
         "telegramApi": {
@@ -326,10 +287,7 @@
       "name": "No Alert Needed1",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
-      "position": [
-        -576,
-        -208
-      ]
+      "position": [-576, -208]
     },
     {
       "parameters": {
@@ -363,10 +321,7 @@
       "name": "Check Today Exists",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -1520,
-        -320
-      ],
+      "position": [-1520, -320],
       "notes": "오늘 데이터 존재 여부 확인"
     },
     {
@@ -396,10 +351,7 @@
       "name": "Today Already Exists?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        -1296,
-        -320
-      ]
+      "position": [-1296, -320]
     },
     {
       "parameters": {
@@ -437,10 +389,7 @@
       "name": "Save New Today Data",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [
-        -1072,
-        -176
-      ],
+      "position": [-1072, -176],
       "credentials": {
         "supabaseApi": {
           "id": "LgsTTjOAXDHsUcBL",
