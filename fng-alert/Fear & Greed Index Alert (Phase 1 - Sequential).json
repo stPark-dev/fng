@@ -1,0 +1,648 @@
+{
+  "name": "Fear & Greed Index Alert (Phase 1 - Sequential)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd",
+        "options": {}
+      },
+      "id": "faad22be-d693-4504-8468-e91f83edb33f",
+      "name": "Fetch Crypto Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2176,
+        -320
+      ],
+      "notes": "CoinGecko API: BTC, ETH 가격 조회"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "fng_logs",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "timestamp",
+              "condition": "gte",
+              "keyValue": "={{ $now.setZone('Asia/Seoul').minus(7, 'days').startOf('day').toUTC().toISO() }}"
+            }
+          ]
+        }
+      },
+      "id": "8dd09025-895f-4fa8-b10b-229433ed4ab3",
+      "name": "Get Existing Dates",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2400,
+        -80
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LgsTTjOAXDHsUcBL",
+          "name": "Supabase account"
+        }
+      },
+      "notes": "최근 7일 기존 데이터 조회"
+    },
+    {
+      "parameters": {
+        "url": "https://api.alternative.me/fng/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "7"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "0663d3cd-b4ae-4ff3-a8c7-d116fe435bee",
+      "name": "Fetch FNG History",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2176,
+        -80
+      ],
+      "notes": "최근 7일 FNG 데이터 조회"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * 누락된 날짜 감지 및 백필 데이터 준비\n */\nconst existingData = $('Get Existing Dates').all();\nconst fngHistory = $('Fetch FNG History').first().json.data;\n\n// 기존 날짜를 Set으로 변환 (YYYY-MM-DD 형식)\nconst existingDates = new Set(\n  existingData.map(item => {\n    const d = new Date(item.json.timestamp);\n    return d.toISOString().split('T')[0];\n  })\n);\n\n// FNG 데이터에서 누락된 날짜 찾기\nconst missingRecords = [];\nfor (const item of fngHistory) {\n  const timestamp = new Date(parseInt(item.timestamp, 10) * 1000);\n  const dateStr = timestamp.toISOString().split('T')[0];\n  \n  if (!existingDates.has(dateStr)) {\n    missingRecords.push({\n      json: {\n        value: parseInt(item.value, 10),\n        value_classification: item.value_classification,\n        timestamp: timestamp.toISOString(),\n        btc_price: null,\n        eth_price: null,\n        ai_comment: '[Backfilled]'\n      }\n    });\n  }\n}\n\nif (missingRecords.length === 0) {\n  return [{ json: { _no_missing: true, message: 'No missing dates found' } }];\n}\n\nconsole.log(`Found ${missingRecords.length} missing date(s)`);\nreturn missingRecords;"
+      },
+      "id": "bc5a874d-b2c3-4b14-811f-c785682f2dee",
+      "name": "Find Missing Dates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1952,
+        -80
+      ],
+      "notes": "누락된 날짜 감지"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-no-missing",
+              "leftValue": "={{ $json._no_missing === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7951f146-217a-4d0b-9db1-9ac3ef54197a",
+      "name": "Has Missing Data?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "fng_logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "value",
+              "fieldValue": "={{ $json.value }}"
+            },
+            {
+              "fieldId": "value_classification",
+              "fieldValue": "={{ $json.value_classification }}"
+            },
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ $json.timestamp }}"
+            },
+            {
+              "fieldId": "btc_price",
+              "fieldValue": "={{ $json.btc_price }}"
+            },
+            {
+              "fieldId": "eth_price",
+              "fieldValue": "={{ $json.eth_price }}"
+            },
+            {
+              "fieldId": "ai_comment",
+              "fieldValue": "={{ $json.ai_comment }}"
+            }
+          ]
+        }
+      },
+      "id": "344695bd-6183-4026-807c-c3d850e661bc",
+      "name": "Save Backfill Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        16
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LgsTTjOAXDHsUcBL",
+          "name": "Supabase account"
+        }
+      },
+      "notes": "누락 데이터 저장"
+    },
+    {
+      "parameters": {},
+      "id": "e68ac8a5-39b8-4f64-a9e1-8d2fd1692d9d",
+      "name": "No Missing Data",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "AIzaSyA8gdzDSl1iutltPpdGS6o26FOXFZo68V8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "={{ [{\n  \"parts\": [{\n    \"text\": \"현재 암호화폐 시장 상황에 대한 짧은 인사이트를 한국어로 작성해줘. \\n\\n데이터:\\n- 공포/탐욕 지수: \" + $('Fetch FNG API1').first().json.data[0].value + \" (\" + $('Fetch FNG API1').first().json.data[0].value_classification + \")\\n- 비트코인 가격: $\" + $('Fetch Crypto Prices').first().json.bitcoin.usd + \"\\n- 이더리움 가격: $\" + $('Fetch Crypto Prices').first().json.ethereum.usd + \"\\n\\n조건:\\n- 3문장 이내로 요약.\\n- 투자 조언처럼 들리게 작성.\\n- 이모지 1~2개 사용.\"\n  }]\n}] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e9dda5d-1f02-46d0-a60a-d0ce2b50cebd",
+      "name": "Fetch Gemini Insight",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1952,
+        -320
+      ],
+      "notes": "Google Gemini Pro API 호출"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "id": "a9e191aa-6637-41be-bc5c-af951bab5d44",
+      "name": "Daily 9AM KST1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2608,
+        -320
+      ],
+      "notes": "매일 오전 9시(KST) 실행"
+    },
+    {
+      "parameters": {
+        "url": "https://api.alternative.me/fng/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "2"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "bc3ca44c-1f78-4837-b4b2-5c2b75345f76",
+      "name": "Fetch FNG API1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2400,
+        -320
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "notes": "Alternative.me API 호출"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Fear & Greed Index - Transform & Alert Logic\n * Phase 1: Price & AI Insight Added\n * Modified to use detailed Zone Logic per user request\n */\n\nconst EMOJI_MAP = {\n  'Extreme Fear': '😱',\n  'Fear': '😨',\n  'Neutral': '😐',\n  'Greed': '🤑',\n  'Extreme Greed': '🚀',\n};\n\nconst unixToISO = (ts) => new Date(parseInt(ts, 10) * 1000).toISOString();\nconst safeParseInt = (val) => parseInt(val, 10) || 0;\nconst getEmoji = (cls) => EMOJI_MAP[cls] || '📊';\nconst getChangeEmoji = (c) => c > 0 ? '📈' : c < 0 ? '📉' : '➡️';\n\nconst getZoneMessage = (value) => {\n  if (value <= 10) {\n    return {\n      zone: '🔥 [공포 지옥] 0-10',\n      title: '패닉셀 절정! 올인 타이밍?!',\n      tip: '역사적 바닥권. 워렌 버핏: \"남들이 공포에 떨 때 탐욕을 부려라\"\\n⚔️ 전군 돌격! 분할매수 적극 고려!',\n      emoji: '🩸'\n    };\n  } else if (value <= 20) {\n    return {\n      zone: '😱 [극단적 공포] 11-20',\n      title: '공포 극대화! 매수 기회 포착!',\n      tip: '시장이 과도하게 비관적. 대부분의 악재가 가격에 반영됨\\n💰 용기있는 자가 부를 얻는다! 분할매수 시작!',\n      emoji: '🎯'\n    };\n  } else if (value <= 30) {\n    return {\n      zone: '😨 [공포] 21-30',\n      title: '공포 우세! 매수 관심 구간',\n      tip: '아직 두려움이 지배. 좋은 자산을 싸게 살 기회\\n🛒 관심 종목 리스트 점검, 분할매수 준비!',\n      emoji: '👀'\n    };\n  } else if (value <= 40) {\n    return {\n      zone: '😰 [약한 공포] 31-40',\n      title: '불안한 시장, 기회 엿보기',\n      tip: '시장 심리 위축. 섣부른 매도보다 관망 or 소량 매수\\n📝 포트폴리오 점검하고 저가 매수 기회 탐색!',\n      emoji: '🔍'\n    };\n  } else if (value <= 60) {\n    return {\n      zone: '😐 [중립] 41-60',\n      title: '균형 상태, 관망 추천',\n      tip: '뚜렷한 방향성 없음. 추세 전환 신호 주시\\n⚖️ 급하게 움직이지 말고 시장 흐름 관찰!',\n      emoji: '⏳'\n    };\n  } else if (value <= 70) {\n    return {\n      zone: '🙂 [약한 탐욕] 61-70',\n      title: '낙관론 확산, 주의 시작',\n      tip: '시장이 긍정적. 신규 매수보다 보유 전략 유지\\n📊 추가 매수는 신중하게, 익절 라인 설정!',\n      emoji: '📈'\n    };\n  } else if (value <= 80) {\n    return {\n      zone: '🤑 [탐욕] 71-80',\n      title: '과열 신호! 차익실현 고려',\n      tip: 'FOMO 주의! 지금 들어가면 물릴 수 있음\\n💵 수익 중인 포지션 일부 정리 고려!',\n      emoji: '⚠️'\n    };\n  } else if (value <= 90) {\n    return {\n      zone: '🚀 [극단적 탐욕] 81-90',\n      title: '버블 경고! 익절 타이밍!',\n      tip: '시장 과열 심각. 역사적으로 조정 임박 구간\\n🛡️ 수익 확보! 현금 비중 확대!',\n      emoji: '🔔'\n    };\n  } else {\n    return {\n      zone: '💥 [탐욕 극한] 91-100',\n      title: '유포리아! 탈출 준비!',\n      tip: '극도의 낙관. 이런 때 사면 고점에 물린다\\n🚨 매도 신호! 욕심 버리고 수익 실현!',\n      emoji: '🏃'\n    };\n  }\n};\n\ntry {\n  const fngNode = $('Fetch FNG API1').first();\n  const fngData = fngNode ? fngNode.json.data : null;\n  const priceNode = $('Fetch Crypto Prices').first();\n  const prices = priceNode ? priceNode.json : null;\n  \n  // Gemini Response Parsing\n  // Structure: candidates[0].content.parts[0].text\n  const geminiData = $input.item.json;\n  const aiComment = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || null;\n\n  if (!Array.isArray(fngData) || fngData.length < 2) {\n    throw new Error('Invalid FNG API response');\n  }\n\n  const todayRaw = fngData[0];\n  const yesterdayRaw = fngData[1];\n  const todayVal = safeParseInt(todayRaw.value);\n  const yesterdayVal = safeParseInt(yesterdayRaw.value);\n  const todayClassification = todayRaw.value_classification || 'Unknown';\n\n  const change = todayVal - yesterdayVal;\n  const changeEmoji = getChangeEmoji(change);\n  const changeSign = change >= 0 ? '+' : '';\n  const emoji = getEmoji(todayClassification);\n  const zoneInfo = getZoneMessage(todayVal);\n\n  const priceSection = (prices?.bitcoin?.usd && prices?.ethereum?.usd) \n      ? `\\n💰 *BTC*: $${prices.bitcoin.usd.toLocaleString()} | *ETH*: $${prices.ethereum.usd.toLocaleString()}` \n      : '';\n  const aiSection = aiComment ? `\\n🤖 *AI Insight*:\\n_${aiComment}_` : '';\n\n  const alertMessage = [\n      `${zoneInfo.emoji} *${zoneInfo.zone}*`,\n      `*${zoneInfo.title}*`,\n      '',\n      `${emoji} *Fear & Greed Index*`,\n      '━━━━━━━━━━━━━━━',\n      `📊 현재 지수: *${todayVal}* (${todayClassification})`,\n      `${changeEmoji} 전일 대비: *${changeSign}${change}*`,\n      `📅 어제 지수: ${yesterdayVal}`,\n      priceSection,\n      '',\n      `💡 *투자 팁*`,\n      zoneInfo.tip,\n      aiSection\n    ].filter(Boolean).join('\\n');\n\n  return [{\n    json: {\n      value: todayVal,\n      value_classification: todayClassification,\n      timestamp: unixToISO(todayRaw.timestamp),\n      btc_price: prices?.bitcoin?.usd,\n      eth_price: prices?.ethereum?.usd,\n      ai_comment: aiComment,\n      should_alert: true,\n      alert_message: alertMessage,\n      change: change,\n    }\n  }];\n\n} catch (error) {\n  return [{\n    json: {\n      _error: true,\n      _error_message: error.message,\n      should_alert: false\n    }\n  }];\n}"
+      },
+      "id": "0f58b028-f9fc-450e-aeb0-0aa74ea403f8",
+      "name": "Transform & Check Alert1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        -320
+      ],
+      "notes": "데이터 병합 및 알림 로직"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $('Transform & Check Alert1').item.json.should_alert }}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "714c5ad5-f38c-4a9c-8825-2f534920f8db",
+      "name": "Should Alert?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "7267294735",
+        "text": "={{ $('Transform & Check Alert1').item.json.alert_message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3bc82c31-0bb8-463f-8bd5-ec861e5afe2c",
+      "name": "Send Telegram Alert1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -576,
+        -400
+      ],
+      "webhookId": "b3f787cd-f341-43fb-911d-607fa176abd3",
+      "credentials": {
+        "telegramApi": {
+          "id": "LGxnfMFceniDnlvc",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "fd4e3de1-cd18-4fed-903d-aaac46c051b3",
+      "name": "No Alert Needed1",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://siauxjnsfhrssoxzfepv.supabase.co/rest/v1/fng_logs?timestamp=eq.{{ encodeURIComponent($json.timestamp) }}&select=id&limit=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpYXV4am5zZmhyc3NveHpmZXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMzE2NTIsImV4cCI6MjA3OTcwNzY1Mn0.jJu9S7aXc_6sjs26xLKKqjlUtyE-Z1EpCJzUb2QQELg"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpYXV4am5zZmhyc3NveHpmZXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMzE2NTIsImV4cCI6MjA3OTcwNzY1Mn0.jJu9S7aXc_6sjs26xLKKqjlUtyE-Z1EpCJzUb2QQELg"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "be5c803a-7fde-4099-9940-f2fa7ad100b7",
+      "name": "Check Today Exists",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1520,
+        -320
+      ],
+      "notes": "오늘 데이터 존재 여부 확인"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "today-exists-check",
+              "leftValue": "={{ $json.body.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "02a371e8-85ee-4a8e-9fed-a3f2d4b7fa7a",
+      "name": "Today Already Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1296,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "fng_logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "value",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.value }}"
+            },
+            {
+              "fieldId": "value_classification",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.value_classification }}"
+            },
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.timestamp }}"
+            },
+            {
+              "fieldId": "btc_price",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.btc_price }}"
+            },
+            {
+              "fieldId": "eth_price",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.eth_price }}"
+            },
+            {
+              "fieldId": "ai_comment",
+              "fieldValue": "={{ $('Transform & Check Alert1').item.json.ai_comment }}"
+            }
+          ]
+        }
+      },
+      "id": "1c515daf-e7bd-4b42-ae01-87e4e4cda3b9",
+      "name": "Save New Today Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "LgsTTjOAXDHsUcBL",
+          "name": "Supabase account"
+        }
+      },
+      "notes": "새 데이터 저장"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch Crypto Prices": {
+      "main": [
+        [
+          {
+            "node": "Fetch Gemini Insight",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Gemini Insight": {
+      "main": [
+        [
+          {
+            "node": "Transform & Check Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily 9AM KST1": {
+      "main": [
+        [
+          {
+            "node": "Fetch FNG API1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Existing Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Existing Dates": {
+      "main": [
+        [
+          {
+            "node": "Fetch FNG History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch FNG History": {
+      "main": [
+        [
+          {
+            "node": "Find Missing Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Missing Dates": {
+      "main": [
+        [
+          {
+            "node": "Has Missing Data?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Missing Data?": {
+      "main": [
+        [
+          {
+            "node": "No Missing Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Backfill Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch FNG API1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Crypto Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform & Check Alert1": {
+      "main": [
+        [
+          {
+            "node": "Check Today Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Today Exists": {
+      "main": [
+        [
+          {
+            "node": "Today Already Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Today Already Exists?": {
+      "main": [
+        [
+          {
+            "node": "Should Alert?1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save New Today Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save New Today Data": {
+      "main": [
+        [
+          {
+            "node": "Should Alert?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Alert?1": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Alert Needed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d3985921-edf1-43fe-aa4d-8e9436e04895",
+  "meta": {
+    "instanceId": "bf5b63f78cbd4aaa159af6f3803643c7af3c2913652a6f9bc66354c394550d75"
+  },
+  "id": "wGkXiO6zkSxZoWX3",
+  "tags": [
+    {
+      "updatedAt": "2025-11-26T06:09:52.079Z",
+      "createdAt": "2025-11-26T06:09:52.079Z",
+      "id": "f5mQorLT0rhfflHw",
+      "name": "etl"
+    },
+    {
+      "updatedAt": "2025-11-26T06:09:52.076Z",
+      "createdAt": "2025-11-26T06:09:52.076Z",
+      "id": "miQxlSkkt9DdjbHZ",
+      "name": "crypto"
+    }
+  ]
+}
